@@ -1,14 +1,113 @@
 # SETUP-AGENTE.md v3 - Instalacao automatica do agente Claude + Telegram (Bot Externo + Prospect + agent-manager)
 
-> Claude, esse arquivo e pra voce executar. O aluno ja rodou o bootstrap e esta logado na conta Claude dele.
+> Claude, esse arquivo e pra voce executar. Pode ser executado em DOIS modos:
 >
-> Sua missao: seguir esse manual do inicio ao fim, fazendo perguntas claras quando precisar, e entregar:
+> **MODO A - Local (aluno avancado):** o aluno ja rodou o bootstrap na VPS e esta logado na conta Claude dele. Voce esta rodando DENTRO da VPS. Pula direto pra ETAPA 0.
+>
+> **MODO B - Remoto (aluno leigo):** voce esta rodando no PC do aluno (Mac/Win/Linux). O aluno tem so o IP/senha da VPS na mao. Voce vai fazer SSH na VPS e executar tudo remotamente. Le a secao **"INSTRUCOES PRO CLAUDE QUE ESTA EXECUTANDO REMOTAMENTE"** logo abaixo.
+>
+> Sua missao em qualquer modo: seguir esse manual do inicio ao fim, fazendo perguntas claras quando precisar, e entregar:
 > - Agente principal (Naia) rodando 24/7 no tmux
 > - 5 subagentes especializados
 > - Bot externo Python (audio bidirecional)
 > - agent-manager.py via PM2 (porta 3600 + Caddy + Cloudflare tunnel)
 > - (Opcional) Clone do {{DONO}} SDR personalizado
 > - (Opcional) Naia Rita pra prospect Insta + Maps
+
+---
+
+## INSTRUCOES PRO CLAUDE QUE ESTA EXECUTANDO REMOTAMENTE (MODO B)
+
+Use essa secao se o aluno esta no PC dele e nao quer mexer em terminal.
+
+### Pre-checks no PC do aluno
+
+Antes de tentar SSH, garanta que tem `ssh` e `sshpass` disponiveis localmente:
+
+**Mac/Linux:**
+```bash
+which ssh           # geralmente ja vem
+which sshpass || (
+  # Mac:  brew install sshpass    (ou hudochenkov/sshpass)
+  # Linux Debian/Ubuntu: sudo apt-get install -y sshpass
+  echo "instale sshpass conforme o SO do aluno"
+)
+```
+
+**Windows:** se o aluno estiver no Windows, prefira instruir ele a usar o WSL2, ou use a lib Python `paramiko` invocando via `python3 -c "import paramiko; ..."`.
+
+### Coleta de dados da VPS (pergunta uma por vez)
+
+Pergunta ao aluno (uma resposta de cada vez, espera ele responder antes da proxima):
+
+1. "Qual o IP publico da sua VPS?" -> guarda como `VPS_IP`
+2. "Qual o usuario de acesso? (geralmente `root`)" -> guarda como `VPS_USER`
+3. "Qual a senha que o provedor te mandou?" -> guarda como `VPS_PASS` (NUNCA mostra ela em log)
+
+### Helper de SSH
+
+Define um wrapper. Use SEMPRE esse wrapper, nao expoe senha em comando isolado:
+
+```bash
+ssh_run() {
+  sshpass -p "$VPS_PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+    "$VPS_USER@$VPS_IP" "$@"
+}
+
+ssh_copy() {
+  sshpass -p "$VPS_PASS" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+    "$1" "$VPS_USER@$VPS_IP:$2"
+}
+```
+
+> **Boas praticas opcional**: depois do primeiro acesso, gere uma chave SSH local, copia pra VPS via `ssh-copy-id`, e desabilita login por senha no `/etc/ssh/sshd_config`. Mas isso e otimizacao, nao bloqueia o setup.
+
+### Teste a conexao
+
+```bash
+ssh_run "uname -a && cat /etc/os-release | head -5"
+```
+
+Se falhar, pergunta de novo o IP/usuario/senha. Se a VPS for nova, pode levar 1-3 min pra bootar SSH apos o provisionamento.
+
+### Rode o bootstrap remotamente
+
+```bash
+ssh_run "curl -fsSL https://raw.githubusercontent.com/denderson2013-bot/agente-claude-telegram-setup-alunos-denderson/main/bootstrap.sh | bash"
+```
+
+Vai demorar 5-10 min. Avise o aluno: "to instalando Node, Postgres, Caddy e dependencias na sua VPS, espera ~10 min".
+
+### Auth Claude na VPS
+
+A autenticacao Claude precisa de browser. Voce nao consegue fazer isso 100% remoto. Estrategia:
+
+1. Inicie o login na VPS:
+   ```bash
+   ssh_run "claude auth login --claudeai"
+   ```
+2. O comando vai imprimir uma URL. Capture essa URL e mande pro aluno.
+3. Diga pro aluno: "Abra essa URL **no navegador do seu PC**, faca login com sua conta Claude Pro/Max, autorize, copie o codigo de volta pra mim."
+4. Quando o aluno colar o codigo, voce envia pra VPS via:
+   ```bash
+   ssh_run "echo 'CODIGO_AQUI' | claude auth submit"
+   ```
+   (ou roda `claude auth login` em modo interativo via heredoc se a CLI exigir)
+5. Valida:
+   ```bash
+   ssh_run "claude auth status"
+   ```
+   Deve mostrar `"loggedIn": true`.
+
+### Continue o setup remoto
+
+Daqui em diante, todas as `bash` lines do manual abaixo voce executa via `ssh_run "..."`. Continua na ETAPA 0 normalmente, so prefixando `ssh_run` em cada bloco.
+
+Quando precisar editar arquivos na VPS, use `cat <<'EOF' | ssh_run "cat > /caminho/do/arquivo"` ou `scp` via `ssh_copy`.
+
+### Final do setup remoto
+
+Apos systemd subir e bot estar online, peca pro aluno mandar um `/start` no bot dele no Telegram. Confirme que o agente respondeu. Se sim, missao cumprida.
 
 ---
 

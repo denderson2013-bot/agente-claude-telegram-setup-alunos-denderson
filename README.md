@@ -1,5 +1,28 @@
 # Agente Claude Code + Telegram - Setup Automatizado (v3 - VERSAO PUBLICA PRA ALUNOS)
 
+---
+
+## INSTALACAO 5 MIN - Sem mexer em terminal (caminho recomendado)
+
+> **Voce nao precisa saber comando nenhum.** O Claude Code do seu PC faz SSH na sua VPS automaticamente, instala tudo, configura, sobe o agente. Voce so responde perguntas.
+
+**6 passos:**
+
+1. Compre uma VPS Ubuntu 22.04+ (Hostinger, Hetzner, DigitalOcean - 4GB RAM, ~R$30-60/mes)
+2. Anote IP, usuario (`root`) e senha que o provedor te mandou
+3. Abra o Claude Code no seu computador ([claude.com/code](https://claude.com/code) ou extensao VS Code)
+4. Cole o prompt magico que esta em [`prompt-instalador.txt`](./prompt-instalador.txt)
+5. Responda as perguntas do Claude (uma por vez, calmamente)
+6. Quando ele falar "agente no ar", abra o Telegram e converse com seu bot
+
+**Guia detalhado passo a passo:** [`INSTRUCAO-PARA-ALUNO.md`](./INSTRUCAO-PARA-ALUNO.md)
+
+---
+
+## Caminho avancado (manual, pra quem ja sabe terminal)
+
+Se voce e desenvolvedor e prefere SSH na VPS e rodar os comandos voce mesmo, siga as secoes abaixo. O fluxo termina no mesmo agente, so e mais "hands on".
+
 > **VERSAO PUBLICA - ALUNOS DO {{DONO}}**
 > Esse repo e a versao publica/sanitizada do setup interno do {{DONO}}. Todos os dados pessoais do dono original viraram placeholders no formato `{{NOME}}`. Voce, aluno, vai preencher com os SEUS proprios dados (nome, dominios, IPs, tokens, bot Telegram, etc).
 >

@@ -1,0 +1,15 @@
+Quero instalar meu agente autonomo Claude + Telegram numa VPS Ubuntu.
+
+Acessa o repositorio publico https://github.com/denderson2013-bot/agente-claude-telegram-setup-alunos-denderson
+e segue o passo a passo de SETUP-AGENTE.md.
+
+Vou te dar as informacoes conforme voce pedir:
+- IP, usuario e senha da VPS
+- Nome do meu agente (ex: Bia, Paula, Lucas)
+- Meu nome
+- Token do bot Telegram (eu crio no @BotFather quando voce pedir)
+- Meu user_id Telegram (eu pego no @userinfobot quando voce pedir)
+- (Opcional) Chave OpenAI pra transcrever audios
+- (Opcional) Chave ElevenLabs pra voz feminina
+
+Faz SSH na VPS por mim, instala o ambiente todo (bootstrap.sh), configura o agente, sobe systemd, e me confirma quando estiver no ar conversando comigo no Telegram.
