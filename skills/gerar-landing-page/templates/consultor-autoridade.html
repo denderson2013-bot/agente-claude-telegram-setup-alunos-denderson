@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{TITULO}}</title>
+
+<!-- {{PIXEL_HEAD}} -->
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #fafafa;
+    --bg-alt: #f0f0f0;
+    --fg: #0a0a0a;
+    --fg-dim: #525252;
+    --accent: #dc2626;
+    --border: #e5e5e5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, sans-serif; line-height: 1.65; }
+  h1, h2, h3, .display { font-family: 'Cormorant Garamond', serif; }
+  .container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  /* Navbar */
+  nav { position: sticky; top: 0; background: rgba(250, 250, 250, 0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 16px 0; z-index: 50; }
+  nav .container { display: flex; justify-content: space-between; align-items: center; }
+  nav .logo { font-family: 'Cormorant Garamond'; font-weight: 600; font-size: 22px; color: var(--fg); letter-spacing: 0.02em; }
+  nav .nav-cta { color: var(--accent); border-bottom: 1px solid var(--accent); padding: 4px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em; text-decoration: none; font-weight: 600; }
+
+  /* Hero */
+  .hero { padding: 90px 0 60px; }
+  .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px; align-items: center; }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } }
+  .hero-text .label { font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.24em; margin-bottom: 20px; font-weight: 600; }
+  .hero h1 { font-size: clamp(40px, 6vw, 72px); font-weight: 600; line-height: 1.05; color: var(--fg); margin-bottom: 22px; letter-spacing: -0.01em; }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero p.lead { font-size: 19px; color: var(--fg-dim); margin-bottom: 30px; max-width: 580px; }
+
+  .hero-photo { aspect-ratio: 4/5; background: var(--bg-alt); border-radius: 4px; overflow: hidden; }
+  .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* CTA */
+  .cta-primary { display: inline-block; padding: 14px 30px; background: var(--fg); color: var(--bg); font-weight: 600; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 0; text-decoration: none; transition: all 0.25s; border: 1px solid var(--fg); }
+  .cta-primary:hover { background: var(--accent); border-color: var(--accent); }
+  .cta-ghost { display: inline-block; padding: 14px 30px; background: transparent; color: var(--fg); font-weight: 600; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid var(--fg); border-radius: 0; text-decoration: none; transition: all 0.25s; }
+  .cta-ghost:hover { background: var(--fg); color: var(--bg); }
+
+  /* Sections */
+  section.block { padding: 90px 0; border-top: 1px solid var(--border); }
+  section.block.dark { background: var(--fg); color: var(--bg); border-top: 0; }
+  section.block.dark h2.section { color: var(--bg); }
+  section.block.dark .section-label { color: var(--accent); }
+  section.block.dark p.section-lead { color: rgba(255,255,255,0.7); }
+
+  .section-label { font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.24em; font-weight: 600; margin-bottom: 18px; }
+  h2.section { font-size: clamp(36px, 5vw, 56px); font-weight: 600; line-height: 1.1; color: var(--fg); margin-bottom: 22px; letter-spacing: -0.01em; }
+  h2.section em { color: var(--accent); font-style: italic; }
+  p.section-lead { color: var(--fg-dim); font-size: 18px; max-width: 760px; }
+
+  /* Authority logos */
+  .authority-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px; align-items: center; margin-top: 40px; }
+  @media (max-width: 768px) { .authority-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; } }
+  .authority-item { text-align: center; }
+  .authority-item .auth-num { font-family: 'Cormorant Garamond'; font-size: 56px; font-weight: 600; color: var(--fg); line-height: 1; }
+  section.block.dark .authority-item .auth-num { color: var(--bg); }
+  .authority-item .auth-label { font-size: 13px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; }
+
+  /* Methodology */
+  .method-list { margin-top: 40px; }
+  .method-item { display: grid; grid-template-columns: 80px 1fr; gap: 24px; padding: 30px 0; border-bottom: 1px solid var(--border); }
+  .method-item:last-child { border-bottom: 0; }
+  .method-num { font-family: 'Cormorant Garamond'; font-size: 64px; font-weight: 600; color: var(--accent); line-height: 1; }
+  .method-content h3 { font-family: 'Cormorant Garamond'; font-size: 30px; font-weight: 600; color: var(--fg); margin-bottom: 8px; }
+  .method-content p { color: var(--fg-dim); font-size: 16.5px; line-height: 1.65; }
+
+  /* Books */
+  .books-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px; }
+  @media (max-width: 768px) { .books-grid { grid-template-columns: 1fr; } }
+  .book { text-align: center; }
+  .book-cover { aspect-ratio: 2/3; background: var(--bg-alt); border-radius: 4px; margin-bottom: 14px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
+  .book-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .book h3 { font-family: 'Cormorant Garamond'; font-size: 22px; font-weight: 600; color: var(--fg); }
+  .book p { color: var(--fg-dim); font-size: 13px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* Quote */
+  blockquote.quote { padding: 32px 0; font-family: 'Cormorant Garamond'; font-size: 28px; font-weight: 400; line-height: 1.4; color: var(--fg); font-style: italic; max-width: 820px; }
+  blockquote.quote::before { content: '\201C'; font-size: 96px; line-height: 1; color: var(--accent); display: block; margin-bottom: -30px; }
+  blockquote.quote cite { display: block; font-family: 'Inter'; font-size: 14px; color: var(--fg-dim); margin-top: 18px; font-style: normal; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  footer { padding: 60px 0 40px; border-top: 1px solid var(--border); text-align: center; }
+  footer .footer-name { font-family: 'Cormorant Garamond'; font-size: 22px; color: var(--fg); }
+  footer p { color: var(--fg-dim); font-size: 13px; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="logo">{{NOME_CONSULTOR}}</div>
+    <a href="{{CTA_URL}}" class="nav-cta">{{CTA_TEXT}}</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-text">
+        <div class="label">/ {{TITULO_PROFISSAO}}</div>
+        <h1>{{HEADLINE}} <em>{{HEADLINE_DESTAQUE}}</em></h1>
+        <p class="lead">{{SUBHEADLINE}}</p>
+        <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+          <a href="{{CTA_URL}}" class="cta-primary">{{CTA_TEXT}}</a>
+          <a href="#metodo" class="cta-ghost">Conhecer metodo</a>
+        </div>
+      </div>
+      <div class="hero-photo">
+        {{HERO_IMG}}
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="block dark">
+  <div class="container">
+    <div class="section-label">/ Autoridade</div>
+    <h2 class="section">Numeros que <em>contam</em></h2>
+
+    <div class="authority-grid">
+      {{AUTORIDADE_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block" id="metodo">
+  <div class="container">
+    <div class="section-label">/ Metodologia</div>
+    <h2 class="section">Como <em>trabalhamos juntos</em></h2>
+    <p class="section-lead">{{METODO_LEAD}}</p>
+
+    <div class="method-list">
+      {{METODO_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="container">
+    <div class="section-label">/ Publicacoes</div>
+    <h2 class="section">Livros e <em>conteudos</em></h2>
+    <p class="section-lead">{{PUBLICACOES_LEAD}}</p>
+
+    <div class="books-grid">
+      {{LIVROS_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="container">
+    <div class="section-label">/ Depoimentos</div>
+    <h2 class="section">O que <em>dizem</em></h2>
+
+    {{TESTIMONIALS_HTML}}
+  </div>
+</section>
+
+<section class="block dark" style="text-align: center;">
+  <div class="container">
+    <h2 class="section">{{CTA_FINAL_TITULO}}</h2>
+    <p class="section-lead" style="margin: 0 auto 30px;">{{CTA_FINAL_TEXTO}}</p>
+    <a href="{{CTA_URL}}" class="cta-ghost" style="border-color: var(--bg); color: var(--bg);">{{CTA_TEXT}}</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-name">{{NOME_CONSULTOR}}</div>
+    <p>{{TITULO_PROFISSAO}} / {{ANO}}</p>
+    <p>{{EMAIL}} / {{TELEFONE}}</p>
+  </div>
+</footer>
+
+<!-- {{UTM_SCRIPT}} -->
+
+</body>
+</html>

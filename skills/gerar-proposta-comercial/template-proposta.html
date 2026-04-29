@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Proposta Comercial — {{NOME_CLIENTE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy-900: #0a1628;
+    --navy-800: #142340;
+    --navy-700: #1d3155;
+    --navy-600: #2a4a7a;
+    --gold: #d4a574;
+    --gold-light: #e8c8a0;
+    --cyan: #5dc1d6;
+    --text: #eaf2ff;
+    --text-dim: #9fb3d1;
+    --glass: rgba(255, 255, 255, 0.04);
+    --glass-border: rgba(212, 165, 116, 0.18);
+  }
+  html, body { background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-800) 100%); color: var(--text); font-family: 'DM Sans', system-ui, sans-serif; line-height: 1.65; min-height: 100vh; }
+  .container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header { padding: 48px 0 24px; border-bottom: 1px solid var(--glass-border); }
+  .brand { font-family: 'Cormorant Garamond', serif; font-size: 22px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+  h1.title { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: clamp(40px, 6vw, 68px); line-height: 1.05; margin: 14px 0 6px; }
+  h1.title em { font-style: italic; color: var(--gold); }
+  .subtitle { color: var(--text-dim); font-size: 18px; margin-bottom: 30px; }
+
+  /* Tabs */
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 12px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 14px; backdrop-filter: blur(12px); }
+  .tab { padding: 12px 22px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text-dim); transition: all 0.25s ease; user-select: none; }
+  .tab:hover { color: var(--text); background: rgba(212, 165, 116, 0.08); }
+  .tab.active { background: var(--gold); color: var(--navy-900); font-weight: 600; box-shadow: 0 4px 18px rgba(212, 165, 116, 0.25); }
+
+  /* Tab content */
+  .tab-content { display: none; padding: 56px 0; }
+  .tab-content.active { display: block; animation: fadeIn 0.45s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(30px, 4vw, 44px); font-weight: 600; margin-bottom: 28px; }
+  h2 em { color: var(--gold); font-style: italic; }
+  h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; margin: 32px 0 14px; color: var(--gold-light); }
+  p { margin-bottom: 14px; color: var(--text-dim); font-size: 16.5px; }
+  p strong { color: var(--text); }
+
+  /* Cards */
+  .glass-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 28px; backdrop-filter: blur(12px); margin-bottom: 18px; }
+  .grid { display: grid; gap: 18px; }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  /* Metrics */
+  .metric { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 14px; padding: 22px; text-align: center; }
+  .metric-value { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 600; color: var(--gold); display: block; }
+  .metric-label { font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+
+  /* Lists */
+  ul.bullets { list-style: none; padding: 0; }
+  ul.bullets li { padding: 10px 0 10px 28px; position: relative; color: var(--text-dim); font-size: 15.5px; }
+  ul.bullets li::before { content: '+'; position: absolute; left: 6px; top: 10px; color: var(--gold); font-weight: 700; }
+
+  /* Checkbox interativo */
+  .check-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: 10px; transition: background 0.2s; cursor: pointer; }
+  .check-item:hover { background: rgba(212, 165, 116, 0.05); }
+  .check-item input[type="checkbox"] { appearance: none; width: 22px; height: 22px; border: 2px solid var(--gold); border-radius: 6px; margin-top: 1px; cursor: pointer; flex-shrink: 0; transition: all 0.2s; position: relative; }
+  .check-item input[type="checkbox"]:checked { background: var(--gold); }
+  .check-item input[type="checkbox"]:checked::after { content: '\2713'; position: absolute; left: 4px; top: -2px; color: var(--navy-900); font-weight: 700; font-size: 14px; }
+  .check-item.done .check-text { color: var(--text-dim); text-decoration: line-through; opacity: 0.6; }
+
+  /* Progress bar */
+  .progress-wrap { margin: 24px 0; }
+  .progress { height: 10px; background: rgba(255, 255, 255, 0.06); border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--cyan)); width: 0%; transition: width 0.6s ease; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-dim); margin-top: 6px; }
+
+  /* Gantt */
+  .gantt { overflow-x: auto; margin: 24px 0; }
+  .gantt-row { display: grid; grid-template-columns: 200px 1fr; gap: 14px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--glass-border); }
+  .gantt-row:last-child { border-bottom: 0; }
+  .gantt-label { font-size: 14px; color: var(--text); font-weight: 500; }
+  .gantt-bar-wrap { background: rgba(255, 255, 255, 0.04); height: 28px; border-radius: 6px; position: relative; overflow: hidden; }
+  .gantt-bar { position: absolute; top: 0; bottom: 0; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 6px; display: flex; align-items: center; padding: 0 10px; font-size: 12px; color: var(--navy-900); font-weight: 600; }
+
+  /* Investment */
+  .pricing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin: 30px 0; }
+  @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
+  .price-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 18px; padding: 36px; position: relative; }
+  .price-card.featured { border-color: var(--gold); box-shadow: 0 12px 40px rgba(212, 165, 116, 0.18); }
+  .price-tag { font-size: 13px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.12em; }
+  .price-value { font-family: 'Cormorant Garamond', serif; font-size: 50px; font-weight: 600; color: var(--text); margin: 8px 0 14px; }
+  .price-value small { font-size: 18px; color: var(--text-dim); display: block; font-family: 'DM Sans'; font-weight: 400; }
+
+  .footer-note { background: rgba(212, 165, 116, 0.06); border: 1px solid var(--glass-border); border-radius: 14px; padding: 18px 22px; margin-top: 22px; font-size: 14.5px; color: var(--text-dim); }
+  .footer-note strong { color: var(--gold); }
+
+  footer { padding: 40px 0; text-align: center; color: var(--text-dim); font-size: 13px; border-top: 1px solid var(--glass-border); margin-top: 40px; }
+
+  /* Back to top */
+  .back-top { position: fixed; bottom: 26px; right: 26px; width: 48px; height: 48px; border-radius: 50%; background: var(--gold); color: var(--navy-900); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); opacity: 0; pointer-events: none; transition: all 0.3s; font-size: 22px; font-weight: 700; }
+  .back-top.visible { opacity: 1; pointer-events: auto; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="brand">Proposta Comercial</div>
+    <h1 class="title">{{PRIMEIRO_NOME}}, <em>{{NICHO}}</em></h1>
+    <p class="subtitle">{{ANO}}. Plano de transformacao com IA, automacao e escala.</p>
+
+    <div class="tabs" role="tablist">
+      <div class="tab active" data-tab="visao">Visao Geral</div>
+      <div class="tab" data-tab="ecossistema">Ecossistema</div>
+      <div class="tab" data-tab="especifico">{{TAB_ESPECIFICA_TITULO}}</div>
+      <div class="tab" data-tab="entregaveis">Entregaveis</div>
+      <div class="tab" data-tab="plano">Plano de Acao</div>
+      <div class="tab" data-tab="investimento">Investimento</div>
+    </div>
+  </header>
+
+  <!-- TAB 1: Visao Geral -->
+  <section id="visao" class="tab-content active">
+    <h2>Contexto e <em>diagnostico</em></h2>
+    <p>{{CONTEXTO_CLIENTE}}</p>
+
+    <div class="grid grid-3" style="margin-top: 24px;">
+      {{METRICAS_HTML}}
+    </div>
+
+    <h3>O que ja funciona</h3>
+    <ul class="bullets">
+      {{DIAGNOSTICO_FUNCIONA}}
+    </ul>
+
+    <h3>O que precisa mudar</h3>
+    <ul class="bullets">
+      {{DIAGNOSTICO_PRECISA_MUDAR}}
+    </ul>
+
+    <h3>Solucao proposta</h3>
+    <div class="glass-card">
+      {{SOLUCAO_HTML}}
+    </div>
+  </section>
+
+  <!-- TAB 2: Ecossistema -->
+  <section id="ecossistema" class="tab-content">
+    <h2>Ecossistema e <em>escada de valor</em></h2>
+    <p>Estruturamos uma escada de valor para que cada cliente passe naturalmente de produto em produto, gerando ticket medio crescente.</p>
+    <div class="glass-card">
+      {{ESCADA_VALOR_HTML}}
+    </div>
+  </section>
+
+  <!-- TAB 3: Tab especifica do nicho -->
+  <section id="especifico" class="tab-content">
+    <h2>{{TAB_ESPECIFICA_TITULO}}</h2>
+    {{TAB_ESPECIFICA_HTML}}
+  </section>
+
+  <!-- TAB 4: Entregaveis -->
+  <section id="entregaveis" class="tab-content">
+    <h2>O que <em>vou entregar</em></h2>
+    <p>Cada item abaixo e um entregavel concreto. Pode marcar como concluido para acompanhar o progresso.</p>
+    <div class="glass-card">
+      {{ENTREGAVEIS_HTML}}
+    </div>
+  </section>
+
+  <!-- TAB 5: Plano de Acao -->
+  <section id="plano" class="tab-content">
+    <h2>Plano de <em>acao</em></h2>
+
+    <div class="progress-wrap">
+      <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-label">
+        <span>Progresso geral</span>
+        <span id="progress-percent">0%</span>
+      </div>
+    </div>
+
+    <div class="glass-card">
+      {{FASES_HTML}}
+    </div>
+
+    <h3>Cronograma visual</h3>
+    <div class="gantt">
+      {{GANTT_HTML}}
+    </div>
+  </section>
+
+  <!-- TAB 6: Investimento (sempre por ultimo) -->
+  <section id="investimento" class="tab-content">
+    <h2>Seu <em>investimento</em></h2>
+    <p>Dois modelos disponiveis. O melhor depende do quanto voce quer aprender (mentoria) versus quanto voce quer terceirizar (consultoria).</p>
+
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-tag">Mentoria 6 meses</div>
+        <div class="price-value">R$ {{INVESTIMENTO_MENTORIA}} <small>a vista ou em 12x</small></div>
+        <p>Voce e seu time aprendem comigo. Eu treino, voce executa, escala com a propria equipe.</p>
+        <ul class="bullets" style="margin-top: 14px;">
+          <li>Encontros semanais de 90 minutos</li>
+          <li>Acesso direto via WhatsApp</li>
+          <li>Acervo completo de templates e prompts</li>
+          <li>Revisao mensal de metricas</li>
+        </ul>
+      </div>
+
+      <div class="price-card featured">
+        <div class="price-tag">Consultoria 12 meses</div>
+        <div class="price-value">R$ {{INVESTIMENTO_CONSULTORIA}} <small>a vista ou em 12x</small></div>
+        <p>Meu time entra dentro da sua operacao e executa por voce. Voce so valida o que sai.</p>
+        <ul class="bullets" style="margin-top: 14px;">
+          <li>Implementacao completa pelo meu time</li>
+          <li>Reunioes semanais com gestor de projeto</li>
+          <li>Stack de IA construida sob medida</li>
+          <li>Garantia de entrega de cada fase</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>ROI estimado</h3>
+    <div class="glass-card">
+      <p>{{ROI_ESTIMADO}}</p>
+    </div>
+
+    <h3>Referencias</h3>
+    <div class="glass-card">
+      {{REFERENCIAS_HTML}}
+    </div>
+
+    <div class="footer-note">
+      <strong>Validade:</strong> Esta proposta e valida ate {{VALIDADE_DATA}}. Apos esta data, valores e disponibilidade podem mudar.
+      <br><br>
+      <strong>Proximo passo:</strong> me responda no WhatsApp confirmando o modelo escolhido. Eu envio o contrato e o link de pagamento na sequencia.
+    </div>
+  </section>
+
+  <footer>
+    Proposta gerada para {{NOME_CLIENTE}}. Confidencial. {{ANO}}.
+  </footer>
+
+</div>
+
+<div class="back-top" id="back-top">&uarr;</div>
+
+<script>
+  // Tabs
+  const tabs = document.querySelectorAll('.tab');
+  const contents = document.querySelectorAll('.tab-content');
+  tabs.forEach(t => {
+    t.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.remove('active'));
+      contents.forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById(t.dataset.tab).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // Checkboxes com localStorage
+  const STORAGE_KEY = 'proposta-{{NOME_CLIENTE}}-checks';
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+  document.querySelectorAll('.check-item input[type="checkbox"]').forEach((cb, idx) => {
+    const id = cb.dataset.id || ('check-' + idx);
+    cb.dataset.id = id;
+    if (saved[id]) {
+      cb.checked = true;
+      cb.closest('.check-item').classList.add('done');
+    }
+    cb.addEventListener('change', () => {
+      saved[id] = cb.checked;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      cb.closest('.check-item').classList.toggle('done', cb.checked);
+      updateProgress();
+    });
+  });
+
+  function updateProgress() {
+    const all = document.querySelectorAll('#plano .check-item input[type="checkbox"]');
+    if (!all.length) return;
+    const done = Array.from(all).filter(c => c.checked).length;
+    const pct = Math.round((done / all.length) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-percent').innerText = pct + '%';
+  }
+  updateProgress();
+
+  // Back to top
+  const back = document.getElementById('back-top');
+  window.addEventListener('scroll', () => {
+    back.classList.toggle('visible', window.scrollY > 400);
+  });
+  back.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+
+</body>
+</html>

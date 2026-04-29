@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{TITULO}}</title>
+
+<!-- {{PIXEL_HEAD}} -->
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-alt: #f7f8fb;
+    --fg: #0f172a;
+    --fg-dim: #475569;
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --accent: #06b6d4;
+    --border: #e2e8f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, sans-serif; line-height: 1.6; }
+  .container { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+
+  /* Navbar */
+  nav { position: sticky; top: 0; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 14px 0; z-index: 50; }
+  nav .container { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+  nav .logo { font-weight: 800; font-size: 20px; color: var(--fg); }
+  nav .nav-links { display: flex; gap: 24px; align-items: center; }
+  nav .nav-links a { color: var(--fg-dim); font-size: 14.5px; font-weight: 500; text-decoration: none; }
+  nav .nav-links a:hover { color: var(--fg); }
+  nav .nav-cta { background: var(--primary); color: white; padding: 9px 18px; border-radius: 8px; font-weight: 600; font-size: 14px; text-decoration: none; transition: background 0.2s; }
+  nav .nav-cta:hover { background: var(--primary-dark); }
+
+  /* Hero */
+  .hero { padding: 80px 0 60px; text-align: center; background: linear-gradient(180deg, var(--bg-alt), var(--bg)); }
+  .hero .badge { display: inline-block; padding: 6px 14px; background: rgba(37, 99, 235, 0.1); color: var(--primary); border-radius: 999px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.04em; margin-bottom: 22px; }
+  .hero h1 { font-size: clamp(36px, 5.5vw, 60px); font-weight: 800; line-height: 1.1; color: var(--fg); margin-bottom: 18px; letter-spacing: -0.02em; max-width: 880px; margin-left: auto; margin-right: auto; }
+  .hero h1 .gradient { background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p.lead { font-size: 19px; color: var(--fg-dim); max-width: 680px; margin: 0 auto 32px; }
+  .hero .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* Buttons */
+  .btn-primary { display: inline-block; padding: 14px 28px; background: var(--primary); color: white; font-weight: 600; font-size: 15px; border-radius: 10px; text-decoration: none; transition: all 0.2s; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25); }
+  .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+  .btn-secondary { display: inline-block; padding: 14px 28px; background: white; color: var(--fg); border: 1px solid var(--border); font-weight: 600; font-size: 15px; border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+  .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+
+  /* Mockup hero */
+  .mockup { max-width: 1000px; margin: 50px auto 0; padding: 12px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 24px; box-shadow: 0 40px 80px rgba(37, 99, 235, 0.18); }
+  .mockup img, .mockup video { width: 100%; border-radius: 14px; display: block; }
+  .mockup-placeholder { width: 100%; aspect-ratio: 16/9; background: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--fg-dim); }
+
+  /* Logos bar */
+  .logos { padding: 50px 0; background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .logos-label { text-align: center; color: var(--fg-dim); font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 24px; }
+  .logos-row { display: flex; flex-wrap: wrap; gap: 36px; justify-content: center; align-items: center; opacity: 0.7; }
+  .logos-row span { font-weight: 700; font-size: 18px; color: var(--fg); }
+
+  /* Sections */
+  section.block { padding: 90px 0; }
+  section.block.alt { background: var(--bg-alt); }
+  .section-label { text-align: center; font-size: 13px; text-transform: uppercase; color: var(--primary); font-weight: 700; letter-spacing: 0.12em; margin-bottom: 14px; }
+  h2.section { font-size: clamp(32px, 4.5vw, 48px); font-weight: 800; text-align: center; color: var(--fg); margin-bottom: 16px; letter-spacing: -0.01em; }
+  p.section-lead { text-align: center; color: var(--fg-dim); font-size: 17.5px; max-width: 700px; margin: 0 auto 50px; }
+
+  /* Features grid */
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  @media (max-width: 768px) { .features-grid { grid-template-columns: 1fr; } }
+  .feature { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 28px; transition: all 0.2s; }
+  .feature:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.06); }
+  .feature-icon { width: 48px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 22px; color: white; margin-bottom: 18px; }
+  .feature h3 { font-size: 18px; font-weight: 700; color: var(--fg); margin-bottom: 8px; }
+  .feature p { color: var(--fg-dim); font-size: 15px; }
+
+  /* Pricing */
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; max-width: 1000px; margin: 0 auto; }
+  @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
+  .price-card { background: white; border: 1px solid var(--border); border-radius: 18px; padding: 36px 28px; transition: all 0.2s; }
+  .price-card.featured { border-color: var(--primary); border-width: 2px; transform: scale(1.02); box-shadow: 0 20px 48px rgba(37, 99, 235, 0.12); }
+  .price-card .price-name { font-weight: 700; font-size: 16px; color: var(--fg); margin-bottom: 6px; }
+  .price-card .price-sub { color: var(--fg-dim); font-size: 14px; margin-bottom: 18px; }
+  .price-card .price-value { font-size: 44px; font-weight: 800; color: var(--fg); line-height: 1; }
+  .price-card .price-suffix { color: var(--fg-dim); font-size: 14px; margin-top: 4px; }
+  .price-card ul { list-style: none; padding: 0; margin: 22px 0; }
+  .price-card ul li { padding: 8px 0 8px 26px; position: relative; font-size: 14.5px; color: var(--fg); }
+  .price-card ul li::before { content: '\2713'; position: absolute; left: 0; color: var(--primary); font-weight: 800; }
+
+  /* FAQ */
+  details { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 10px; cursor: pointer; }
+  details summary { font-weight: 600; color: var(--fg); list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: '+'; float: right; color: var(--primary); transition: transform 0.2s; font-size: 22px; line-height: 1; }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p { margin-top: 12px; color: var(--fg-dim); font-size: 14.5px; }
+
+  footer { padding: 50px 0 30px; text-align: center; border-top: 1px solid var(--border); }
+  footer p { color: var(--fg-dim); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="logo">{{NOME_MARCA}}</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="{{CTA_URL}}" class="nav-cta">{{CTA_TEXT}}</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <span class="badge">{{BADGE}}</span>
+    <h1>{{HEADLINE}} <span class="gradient">{{HEADLINE_DESTAQUE}}</span></h1>
+    <p class="lead">{{SUBHEADLINE}}</p>
+    <div class="cta-row">
+      <a href="{{CTA_URL}}" class="btn-primary">{{CTA_TEXT}}</a>
+      <a href="#demo" class="btn-secondary">Ver demo</a>
+    </div>
+
+    <div class="mockup">
+      {{HERO_IMG}}
+    </div>
+  </div>
+</header>
+
+<section class="logos">
+  <div class="container">
+    <div class="logos-label">Confiam na gente</div>
+    <div class="logos-row">
+      {{LOGOS_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block" id="features">
+  <div class="container">
+    <div class="section-label">/ Features</div>
+    <h2 class="section">Tudo que voce precisa</h2>
+    <p class="section-lead">{{FEATURES_LEAD}}</p>
+
+    <div class="features-grid">
+      {{FEATURES_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block alt" id="pricing">
+  <div class="container">
+    <div class="section-label">/ Precos</div>
+    <h2 class="section">Simples e transparente</h2>
+    <p class="section-lead">{{PRICING_LEAD}}</p>
+
+    <div class="pricing-grid">
+      {{PRICING_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block" id="faq">
+  <div class="container" style="max-width: 760px;">
+    <div class="section-label">/ FAQ</div>
+    <h2 class="section">Perguntas frequentes</h2>
+    <div style="margin-top: 30px;">
+      {{FAQ_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block" style="text-align: center; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white;">
+  <div class="container">
+    <h2 class="section" style="color: white;">{{CTA_FINAL_TITULO}}</h2>
+    <p class="section-lead" style="color: rgba(255,255,255,0.9); margin-bottom: 24px;">{{CTA_FINAL_TEXTO}}</p>
+    <a href="{{CTA_URL}}" class="btn-primary" style="background: white; color: var(--primary);">{{CTA_TEXT}}</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>{{NOME_MARCA}} / {{ANO}} / Todos os direitos reservados</p>
+    <p style="margin-top: 6px;">{{EMAIL}} / {{TELEFONE}}</p>
+  </div>
+</footer>
+
+<!-- {{UTM_SCRIPT}} -->
+
+</body>
+</html>

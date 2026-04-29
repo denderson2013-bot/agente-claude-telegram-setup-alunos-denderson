@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{TITULO}}</title>
+
+<!-- {{PIXEL_HEAD}} -->
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-card: #141414;
+    --gold: #c9a86b;
+    --gold-light: #e0c89b;
+    --champagne: #f5e6c8;
+    --fg: #ededed;
+    --fg-dim: #999999;
+    --border: rgba(201, 168, 107, 0.2);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, sans-serif; line-height: 1.65; }
+  h1, h2, h3, .display { font-family: 'Playfair Display', serif; }
+  .container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  /* Navbar */
+  nav { position: sticky; top: 0; background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 18px 0; z-index: 50; }
+  nav .container { display: flex; justify-content: space-between; align-items: center; }
+  nav .nav-logo { font-family: 'Playfair Display'; font-size: 22px; font-weight: 700; color: var(--gold); letter-spacing: 0.04em; }
+  nav a.nav-cta { color: var(--gold); border: 1px solid var(--gold); padding: 10px 22px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; text-decoration: none; transition: all 0.2s; }
+  nav a.nav-cta:hover { background: var(--gold); color: black; }
+
+  /* Hero */
+  .hero { padding: 100px 0 80px; text-align: center; }
+  .hero .label { font-size: 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.24em; margin-bottom: 24px; }
+  .hero h1 { font-size: clamp(44px, 6vw, 84px); font-weight: 600; line-height: 1.05; color: white; max-width: 940px; margin: 0 auto 22px; letter-spacing: -0.01em; }
+  .hero h1 em { color: var(--gold); font-style: italic; }
+  .hero p.lead { font-size: 19px; color: var(--fg-dim); max-width: 680px; margin: 0 auto 36px; }
+
+  /* CTA */
+  .cta-primary { display: inline-block; padding: 16px 38px; background: var(--gold); color: black; font-weight: 600; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; border: 0; cursor: pointer; transition: all 0.25s; text-decoration: none; }
+  .cta-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .cta-ghost { display: inline-block; padding: 16px 38px; border: 1px solid var(--gold); color: var(--gold); font-weight: 600; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: all 0.25s; text-decoration: none; }
+  .cta-ghost:hover { background: var(--gold); color: black; }
+
+  /* Sections */
+  section.block { padding: 90px 0; border-top: 1px solid var(--border); }
+  .section-label { font-size: 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.24em; margin-bottom: 20px; }
+  h2.section { font-size: clamp(36px, 5vw, 56px); font-weight: 600; line-height: 1.1; color: white; margin-bottom: 26px; letter-spacing: -0.01em; }
+  h2.section em { color: var(--gold); font-style: italic; }
+  p.section-lead { color: var(--fg-dim); font-size: 17.5px; max-width: 760px; }
+
+  /* Service grid */
+  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 40px; }
+  @media (max-width: 768px) { .services-grid { grid-template-columns: 1fr; } }
+  .service { background: var(--bg-card); border: 1px solid var(--border); padding: 32px; transition: border-color 0.3s; }
+  .service:hover { border-color: var(--gold); }
+  .service h3 { font-family: 'Playfair Display'; font-size: 26px; font-weight: 600; color: var(--gold); margin-bottom: 12px; }
+  .service p { color: var(--fg-dim); font-size: 15px; line-height: 1.7; }
+
+  /* Cases */
+  .cases-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-top: 40px; }
+  @media (max-width: 768px) { .cases-grid { grid-template-columns: 1fr; } }
+  .case-card { background: var(--bg-card); border: 1px solid var(--border); padding: 38px; }
+  .case-tag { font-size: 11px; color: var(--gold); letter-spacing: 0.18em; text-transform: uppercase; }
+  .case-h { font-family: 'Playfair Display'; font-size: 28px; font-weight: 600; color: white; margin: 8px 0 16px; }
+  .case-stat { font-family: 'Playfair Display'; font-size: 56px; font-weight: 600; color: var(--gold); line-height: 1; margin: 18px 0 8px; }
+  .case-stat-label { font-size: 13px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+  .case-card p { color: var(--fg-dim); font-size: 15px; margin-top: 14px; line-height: 1.65; }
+
+  /* Process */
+  .process-list { counter-reset: step; margin-top: 30px; }
+  .process-item { display: grid; grid-template-columns: 80px 1fr; gap: 22px; padding: 26px 0; border-bottom: 1px solid var(--border); }
+  .process-item:last-child { border-bottom: 0; }
+  .process-num { font-family: 'Playfair Display'; font-size: 56px; font-weight: 600; color: var(--gold); line-height: 1; }
+  .process-content h3 { font-family: 'Playfair Display'; font-size: 26px; font-weight: 600; color: white; margin-bottom: 8px; }
+  .process-content p { color: var(--fg-dim); font-size: 15.5px; line-height: 1.65; }
+
+  /* Quote */
+  blockquote.testimonial { background: var(--bg-card); border-left: 3px solid var(--gold); padding: 32px 36px; margin: 24px 0; font-family: 'Playfair Display'; font-size: 22px; font-weight: 400; line-height: 1.5; color: var(--champagne); font-style: italic; }
+  blockquote.testimonial cite { display: block; font-family: 'Inter'; font-size: 13px; color: var(--gold); margin-top: 14px; font-style: normal; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* Footer */
+  footer { padding: 60px 0 40px; border-top: 1px solid var(--border); text-align: center; }
+  footer .footer-brand { font-family: 'Playfair Display'; font-size: 22px; color: var(--gold); margin-bottom: 14px; }
+  footer p { color: var(--fg-dim); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="nav-logo">{{NOME_MARCA}}</div>
+    <a href="{{CTA_URL}}" class="nav-cta">{{CTA_TEXT}}</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div class="label">/ {{TAGLINE_LABEL}}</div>
+    <h1>{{HEADLINE}} <em>{{HEADLINE_DESTAQUE}}</em></h1>
+    <p class="lead">{{SUBHEADLINE}}</p>
+    <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+      <a href="{{CTA_URL}}" class="cta-primary">{{CTA_TEXT}}</a>
+      <a href="#cases" class="cta-ghost">Ver cases</a>
+    </div>
+  </div>
+</header>
+
+<section class="block">
+  <div class="container">
+    <div class="section-label">/ Servicos</div>
+    <h2 class="section">O que <em>fazemos</em></h2>
+    <p class="section-lead">{{SERVICOS_LEAD}}</p>
+
+    <div class="services-grid">
+      {{SERVICOS_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block" id="cases">
+  <div class="container">
+    <div class="section-label">/ Cases</div>
+    <h2 class="section">Resultados <em>reais</em></h2>
+    <p class="section-lead">{{CASES_LEAD}}</p>
+
+    <div class="cases-grid">
+      {{CASES_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="container">
+    <div class="section-label">/ Processo</div>
+    <h2 class="section">Como <em>trabalhamos</em></h2>
+    <p class="section-lead">{{PROCESSO_LEAD}}</p>
+
+    <div class="process-list">
+      {{PROCESSO_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="container">
+    <div class="section-label">/ Depoimentos</div>
+    <h2 class="section">O que <em>clientes</em> falam</h2>
+
+    {{TESTIMONIALS_HTML}}
+  </div>
+</section>
+
+<section class="block" style="text-align: center;">
+  <div class="container">
+    <h2 class="section">{{CTA_FINAL_TITULO}}</h2>
+    <p class="section-lead" style="margin: 0 auto 30px;">{{CTA_FINAL_TEXTO}}</p>
+    <a href="{{CTA_URL}}" class="cta-primary">{{CTA_TEXT}}</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-brand">{{NOME_MARCA}}</div>
+    <p>{{ANO}} / Todos os direitos reservados</p>
+    <p style="margin-top: 8px;">{{EMAIL}} / {{TELEFONE}}</p>
+  </div>
+</footer>
+
+<!-- {{UTM_SCRIPT}} -->
+
+</body>
+</html>

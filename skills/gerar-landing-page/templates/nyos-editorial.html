@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{NOME_PRODUTO}}</title>
+
+<!-- {{PIXEL_HEAD}} -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #00110E;
+    --fg: #C4B597;
+    --primary: #F05524;
+    --secondary: #005C54;
+    --accent: #32D0C0;
+    --border: #005C54;
+    --card: #00110E;
+    --card-hover: #005C54;
+  }
+  html, body { background: var(--bg); color: var(--fg); font-family: 'JetBrains Mono', ui-monospace, monospace; line-height: 1.6; min-height: 100vh; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* Navbar */
+  nav { position: sticky; top: 0; background: rgba(0, 17, 14, 0.92); backdrop-filter: blur(12px); padding: 16px 0; border-bottom: 1px solid var(--border); z-index: 50; }
+  nav .container { display: flex; justify-content: space-between; align-items: center; }
+  nav .logo { font-family: 'Big Shoulders Display', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--fg); }
+  nav .nav-cta { background: var(--primary); color: var(--bg); padding: 10px 22px; border-radius: 0; font-family: 'JetBrains Mono'; font-weight: 700; font-size: 13px; text-transform: uppercase; cursor: pointer; border: 0; transition: opacity 0.2s; text-decoration: none; }
+  nav .nav-cta:hover { opacity: 0.85; }
+
+  /* Hero */
+  .hero { padding: 80px 0 60px; border-bottom: 1px solid var(--border); }
+  .hero .label { font-size: 12px; text-transform: uppercase; font-weight: 800; color: var(--accent); letter-spacing: 0.18em; margin-bottom: 18px; }
+  .hero h1 { font-family: 'Big Shoulders Display', sans-serif; font-size: clamp(48px, 8vw, 110px); font-weight: 900; line-height: 0.95; text-transform: uppercase; color: var(--fg); margin-bottom: 24px; letter-spacing: -0.02em; }
+  .hero h1 span { color: var(--primary); }
+  .hero p.lead { font-size: 18px; color: var(--fg); opacity: 0.85; max-width: 700px; margin-bottom: 32px; }
+  .hero .cta-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary { background: var(--primary); color: var(--bg); padding: 16px 32px; font-weight: 700; text-transform: uppercase; font-size: 14px; letter-spacing: 0.08em; border: 0; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+  .btn-primary:hover { background: var(--accent); color: var(--bg); transform: translateY(-2px); }
+  .btn-secondary { background: transparent; color: var(--fg); padding: 16px 32px; font-weight: 700; text-transform: uppercase; font-size: 14px; letter-spacing: 0.08em; border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+  .btn-secondary:hover { background: var(--card-hover); color: var(--fg); }
+
+  /* Sections */
+  section.block { padding: 70px 0; border-bottom: 1px solid var(--border); }
+  .section-label { font-size: 12px; text-transform: uppercase; font-weight: 800; color: var(--accent); letter-spacing: 0.18em; margin-bottom: 18px; }
+  h2 { font-family: 'Big Shoulders Display', sans-serif; font-size: clamp(36px, 5vw, 60px); font-weight: 800; text-transform: uppercase; line-height: 1.05; color: var(--fg); margin-bottom: 30px; }
+  h2 span { color: var(--primary); }
+
+  /* Cards grid */
+  .grid { display: grid; gap: 18px; }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--border); padding: 28px; transition: all 0.3s; }
+  .card:hover { background: var(--card-hover); border-color: var(--primary); }
+  .card:hover .card-title { color: var(--primary); }
+  .card-label { font-size: 11px; text-transform: uppercase; font-weight: 800; color: var(--accent); letter-spacing: 0.18em; }
+  .card-title { font-family: 'Big Shoulders Display', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase; color: var(--fg); margin: 8px 0 12px; transition: color 0.2s; }
+  .card p { font-size: 14.5px; color: var(--fg); opacity: 0.8; line-height: 1.65; }
+
+  /* Pricing */
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 30px; }
+  @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
+  .price-card { background: var(--card); border: 1px solid var(--border); padding: 36px 28px; }
+  .price-card.featured { border-color: var(--primary); }
+  .price-card .price-label { font-size: 12px; text-transform: uppercase; font-weight: 800; color: var(--accent); letter-spacing: 0.18em; }
+  .price-card .price-value { font-family: 'Big Shoulders Display', sans-serif; font-size: 56px; font-weight: 900; color: var(--fg); margin: 10px 0; line-height: 1; }
+  .price-card .price-suffix { font-size: 14px; color: var(--fg); opacity: 0.7; margin-bottom: 18px; }
+  .price-card ul { list-style: none; margin: 18px 0; }
+  .price-card ul li { padding: 8px 0 8px 24px; position: relative; font-size: 14px; color: var(--fg); opacity: 0.85; }
+  .price-card ul li::before { content: '+'; position: absolute; left: 4px; color: var(--primary); font-weight: 700; }
+
+  /* FAQ */
+  details { background: var(--card); border: 1px solid var(--border); padding: 18px 22px; margin-bottom: 10px; cursor: pointer; }
+  details summary { font-family: 'Big Shoulders Display', sans-serif; font-size: 18px; font-weight: 700; text-transform: uppercase; color: var(--fg); list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: '+'; float: right; color: var(--primary); transition: transform 0.2s; }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p { margin-top: 14px; font-size: 14.5px; color: var(--fg); opacity: 0.8; }
+
+  /* Footer */
+  footer { padding: 50px 0 30px; text-align: center; }
+  footer .footer-label { font-size: 11px; text-transform: uppercase; color: var(--fg); opacity: 0.6; letter-spacing: 0.18em; }
+  footer .footer-disc { font-size: 12px; color: var(--fg); opacity: 0.5; margin-top: 14px; max-width: 700px; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="logo">{{NOME_PRODUTO}}</div>
+    <a href="{{CTA_LINK}}" class="nav-cta">{{CTA_TEXTO}}</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div class="label">/ {{ANO}} / Edicao Limitada</div>
+    <h1>{{TITULO_PRINCIPAL}} <span>{{TITULO_DESTAQUE}}</span></h1>
+    <p class="lead">{{SUBTITULO}}</p>
+    <div class="cta-row">
+      <a href="{{CTA_LINK}}" class="btn-primary">{{CTA_TEXTO}}</a>
+      <a href="#detalhes" class="btn-secondary">Ver detalhes</a>
+    </div>
+  </div>
+</header>
+
+<section class="block">
+  <div class="container">
+    <div class="section-label">/ Pilares</div>
+    <h2>O que voce <span>recebe</span></h2>
+
+    <div class="grid grid-3">
+      {{BENEFICIOS_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block" id="detalhes">
+  <div class="container">
+    <div class="section-label">/ Detalhes</div>
+    <h2>Como vai <span>funcionar</span></h2>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-label">/ FORMATO</div>
+        <div class="card-title">Encontros estruturados</div>
+        <p>{{DETALHE_FORMATO}}</p>
+      </div>
+      <div class="card">
+        <div class="card-label">/ DURACAO</div>
+        <div class="card-title">Programa completo</div>
+        <p>{{DETALHE_DURACAO}}</p>
+      </div>
+      <div class="card">
+        <div class="card-label">/ ENTREGAVEIS</div>
+        <div class="card-title">O que sai junto</div>
+        <p>{{DETALHE_ENTREGAVEIS}}</p>
+      </div>
+      <div class="card">
+        <div class="card-label">/ SUPORTE</div>
+        <div class="card-title">Acompanhamento</div>
+        <p>{{DETALHE_SUPORTE}}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="container">
+    <div class="section-label">/ Investimento</div>
+    <h2>Os <span>numeros</span></h2>
+
+    <div class="pricing-grid">
+      {{LOTES_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="container">
+    <div class="section-label">/ Duvidas</div>
+    <h2>Perguntas <span>frequentes</span></h2>
+
+    {{FAQ_HTML}}
+  </div>
+</section>
+
+<section class="block">
+  <div class="container" style="text-align: center;">
+    <h2>{{CTA_FINAL_TITULO}}</h2>
+    <a href="{{CTA_LINK}}" class="btn-primary" style="margin-top: 20px;">{{CTA_TEXTO}}</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-label">/ {{NOME_PRODUTO}} / {{ANO}}</div>
+    <p class="footer-disc">{{DISCLAIMER}}</p>
+  </div>
+</footer>
+
+<!-- {{UTM_SCRIPT}} -->
+
+</body>
+</html>

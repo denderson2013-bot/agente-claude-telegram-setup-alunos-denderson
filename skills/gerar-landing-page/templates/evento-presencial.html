@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{TITULO}}</title>
+
+<!-- {{PIXEL_HEAD}} -->
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --primary: {{COR_PRIMARIA}};
+    --secondary: {{COR_SECUNDARIA}};
+    --fg: #f5f5f5;
+    --fg-dim: #a3a3a3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, sans-serif; }
+  h1, h2, h3, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; }
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+  /* Header */
+  .hero { padding: 50px 0 40px; text-align: center; position: relative; }
+  .hero .urgency { display: inline-block; padding: 8px 20px; background: var(--primary); color: black; font-family: 'Bebas Neue'; font-size: 14px; letter-spacing: 0.16em; margin-bottom: 24px; animation: pulse-urgency 1.6s infinite; }
+  @keyframes pulse-urgency { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+  .hero h1 { font-size: clamp(44px, 8vw, 96px); line-height: 0.95; color: white; margin-bottom: 18px; }
+  .hero h1 .highlight { color: var(--primary); display: block; }
+  .hero p.subhead { font-size: 19px; color: var(--fg-dim); max-width: 720px; margin: 0 auto 28px; }
+
+  /* Date block */
+  .date-block { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 600px; margin: 0 auto 40px; }
+  @media (max-width: 540px) { .date-block { grid-template-columns: 1fr; } }
+  .date-item { background: #141414; padding: 24px; border-radius: 8px; border: 1px solid #1f1f1f; }
+  .date-label { font-family: 'Bebas Neue'; font-size: 13px; color: var(--primary); letter-spacing: 0.16em; }
+  .date-value { font-family: 'Bebas Neue'; font-size: 38px; color: white; line-height: 1; margin-top: 6px; }
+  .date-value.small { font-size: 22px; }
+
+  /* Countdown */
+  .countdown { display: flex; justify-content: center; gap: 18px; margin: 30px 0 36px; flex-wrap: wrap; }
+  .count-box { background: #141414; padding: 22px 26px; border-radius: 8px; border: 2px solid var(--primary); min-width: 90px; }
+  .count-num { font-family: 'Bebas Neue'; font-size: 56px; line-height: 1; color: var(--primary); }
+  .count-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg-dim); margin-top: 4px; }
+
+  /* CTA */
+  .cta-primary { display: inline-block; padding: 22px 56px; background: var(--primary); color: black; font-family: 'Bebas Neue'; font-size: 28px; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 8px; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 12px 32px rgba(0,0,0,0.5); animation: cta-pulse 2s infinite; }
+  @keyframes cta-pulse { 0%, 100% { box-shadow: 0 12px 32px rgba(0,0,0,0.5); } 50% { box-shadow: 0 16px 48px rgba(0,0,0,0.7); } }
+  .cta-primary:hover { transform: translateY(-3px) scale(1.03); }
+
+  /* Sections */
+  section.block { padding: 70px 0; border-top: 1px solid #1a1a1a; }
+  h2.section { font-size: clamp(36px, 5vw, 60px); color: white; text-transform: uppercase; margin-bottom: 18px; }
+  h2.section .highlight { color: var(--primary); }
+  p.section-lead { color: var(--fg-dim); font-size: 17px; line-height: 1.6; max-width: 760px; }
+
+  /* Schedule */
+  .schedule-list { margin-top: 30px; }
+  .schedule-item { display: grid; grid-template-columns: 110px 1fr; gap: 20px; padding: 20px 0; border-bottom: 1px solid #1a1a1a; }
+  .schedule-time { font-family: 'Bebas Neue'; font-size: 28px; color: var(--primary); }
+  .schedule-content h3 { font-family: 'Bebas Neue'; font-size: 22px; color: white; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .schedule-content p { color: var(--fg-dim); font-size: 14.5px; }
+
+  /* Speakers */
+  .speakers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 30px; }
+  @media (max-width: 768px) { .speakers-grid { grid-template-columns: 1fr; } }
+  .speaker { background: #141414; border: 1px solid #1f1f1f; padding: 28px; text-align: center; transition: border-color 0.3s; }
+  .speaker:hover { border-color: var(--primary); }
+  .speaker img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 14px; display: block; }
+  .speaker .speaker-name { font-family: 'Bebas Neue'; font-size: 24px; color: white; }
+  .speaker .speaker-role { font-size: 13px; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em; margin: 4px 0 10px; }
+  .speaker p { color: var(--fg-dim); font-size: 14.5px; line-height: 1.55; }
+
+  /* Lots */
+  .lots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 30px; }
+  @media (max-width: 768px) { .lots-grid { grid-template-columns: 1fr; } }
+  .lot { background: #141414; border: 1px solid #1f1f1f; padding: 30px 24px; text-align: center; border-radius: 8px; }
+  .lot.featured { border: 2px solid var(--primary); transform: scale(1.02); }
+  .lot.sold { opacity: 0.5; }
+  .lot.sold::after { content: 'ESGOTADO'; display: block; margin-top: 14px; font-family: 'Bebas Neue'; color: #ef4444; letter-spacing: 0.16em; }
+  .lot-label { font-family: 'Bebas Neue'; font-size: 16px; color: var(--primary); letter-spacing: 0.18em; }
+  .lot-price { font-family: 'Bebas Neue'; font-size: 56px; color: white; line-height: 1; margin: 14px 0 6px; }
+  .lot-price .currency { font-size: 22px; vertical-align: top; }
+  .lot-suffix { color: var(--fg-dim); font-size: 13px; margin-bottom: 16px; }
+
+  /* FAQ */
+  details { background: #141414; border-radius: 8px; padding: 18px 22px; margin-bottom: 10px; cursor: pointer; }
+  details summary { font-weight: 700; color: white; list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: '+'; float: right; color: var(--primary); transition: transform 0.2s; font-size: 22px; line-height: 1; }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p { margin-top: 12px; color: var(--fg-dim); line-height: 1.6; }
+
+  footer { padding: 50px 0 30px; text-align: center; border-top: 1px solid #1a1a1a; }
+  footer p { color: var(--fg-dim); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <span class="urgency">{{URGENCIA_BADGE}}</span>
+    <h1>{{HEADLINE}}<span class="highlight">{{HEADLINE_DESTAQUE}}</span></h1>
+    <p class="subhead">{{SUBHEADLINE}}</p>
+
+    <div class="date-block">
+      <div class="date-item">
+        <div class="date-label">DATA</div>
+        <div class="date-value small">{{DATA_EVENTO}}</div>
+      </div>
+      <div class="date-item">
+        <div class="date-label">HORARIO</div>
+        <div class="date-value small">{{HORARIO_EVENTO}}</div>
+      </div>
+      <div class="date-item">
+        <div class="date-label">LOCAL</div>
+        <div class="date-value small">{{LOCAL_EVENTO}}</div>
+      </div>
+    </div>
+
+    <div class="countdown" id="countdown" data-target="{{DATA_EVENTO_ISO}}">
+      <div class="count-box"><div class="count-num" id="days">00</div><div class="count-label">Dias</div></div>
+      <div class="count-box"><div class="count-num" id="hours">00</div><div class="count-label">Horas</div></div>
+      <div class="count-box"><div class="count-num" id="mins">00</div><div class="count-label">Min</div></div>
+      <div class="count-box"><div class="count-num" id="secs">00</div><div class="count-label">Seg</div></div>
+    </div>
+
+    <a href="{{CTA_URL}}" class="cta-primary">{{CTA_TEXT}}</a>
+  </div>
+</header>
+
+<section class="block">
+  <div class="container">
+    <h2 class="section">O que voce <span class="highlight">vai ver</span></h2>
+    <p class="section-lead">{{O_QUE_VAI_VER_LEAD}}</p>
+
+    <div class="schedule-list">
+      {{PROGRAMACAO_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="container">
+    <h2 class="section">Quem vai <span class="highlight">apresentar</span></h2>
+
+    <div class="speakers-grid">
+      {{SPEAKERS_HTML}}
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="container">
+    <h2 class="section">Lotes <span class="highlight">disponiveis</span></h2>
+    <p class="section-lead">Quanto antes garantir, menor o investimento. Lotes sao limitados.</p>
+
+    <div class="lots-grid">
+      {{LOTES_HTML}}
+    </div>
+
+    <div style="text-align: center; margin-top: 32px;">
+      <a href="{{CTA_URL}}" class="cta-primary">{{CTA_TEXT}}</a>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="container">
+    <h2 class="section">Perguntas <span class="highlight">frequentes</span></h2>
+    {{FAQ_HTML}}
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>{{NOME_MARCA}} / {{ANO}}</p>
+  </div>
+</footer>
+
+<script>
+  const target = document.getElementById('countdown')?.dataset.target;
+  if (target) {
+    const t = new Date(target).getTime();
+    const tick = () => {
+      const diff = Math.max(0, t - Date.now());
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      document.getElementById('days').textContent = String(d).padStart(2, '0');
+      document.getElementById('hours').textContent = String(h).padStart(2, '0');
+      document.getElementById('mins').textContent = String(m).padStart(2, '0');
+      document.getElementById('secs').textContent = String(s).padStart(2, '0');
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+</script>
+
+<!-- {{UTM_SCRIPT}} -->
+
+</body>
+</html>

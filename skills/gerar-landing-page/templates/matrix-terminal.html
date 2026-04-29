@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{NOME_PRODUTO}}</title>
+
+<!-- {{PIXEL_HEAD}} -->
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --matrix: #00FF00;
+    --matrix-dark: #00CC00;
+    --matrix-dim: rgba(0, 255, 0, 0.3);
+    --cta: #FF3333;
+    --bg: #000000;
+    --dark-800: #0A0A0A;
+    --dark-700: #111111;
+    --body-text: #C0C0C0;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--body-text); font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; margin: 0; }
+  h1, h2, h3, .mono, .badge, button { font-family: 'Fira Code', ui-monospace, monospace; }
+
+  /* Matrix Rain */
+  #matrix-canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.12; z-index: 0; }
+
+  /* Layout */
+  main { position: relative; z-index: 1; }
+  .container { max-width: 1152px; margin: 0 auto; padding: 0 16px; }
+
+  /* Navbar */
+  nav { position: sticky; top: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0, 255, 0, 0.2); padding: 14px 0; z-index: 50; }
+  nav .container { display: flex; justify-content: space-between; align-items: center; }
+  nav .nav-logo { font-family: 'Fira Code'; font-weight: 700; color: var(--matrix); }
+  nav .nav-logo::before { content: '> '; color: var(--matrix); }
+  nav .live-indicator { display: flex; align-items: center; gap: 8px; font-family: 'Fira Code'; font-size: 12px; color: #ff5f56; text-transform: uppercase; }
+  nav .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #ff5f56; box-shadow: 0 0 8px #ff5f56; animation: live-pulse 1.5s infinite; }
+  @keyframes live-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  /* Terminal Card */
+  .terminal-card { background: var(--dark-800); border: 2px dashed rgba(0, 255, 0, 0.4); border-radius: 8px; padding: 24px; margin-bottom: 18px; position: relative; }
+  .terminal-card::before { content: ''; position: absolute; top: 14px; left: 14px; width: 12px; height: 12px; border-radius: 50%; background: #ff5f56; box-shadow: 22px 0 0 #ffbd2e, 44px 0 0 #27c93f; }
+  .terminal-card .body { margin-top: 24px; }
+
+  .terminal-prompt::before { content: '> '; color: var(--matrix); font-family: 'Fira Code'; font-weight: 600; }
+  .terminal-shell::before { content: '$ '; color: var(--matrix); font-family: 'Fira Code'; }
+  .terminal-comment { color: rgba(0, 255, 0, 0.6); font-family: 'Fira Code'; font-size: 13px; }
+  .terminal-comment::before { content: '// '; }
+
+  /* Hero */
+  .hero { padding: 80px 0 60px; }
+  .hero h1 { font-family: 'Inter'; font-size: clamp(36px, 6vw, 56px); font-weight: 900; line-height: 1.05; color: white; margin-bottom: 22px; }
+  .hero h1 .glow { color: var(--matrix); text-shadow: 0 0 16px rgba(0, 255, 0, 0.5); }
+  .hero p.subtitle { font-size: 18px; color: var(--body-text); max-width: 640px; margin-bottom: 28px; }
+
+  /* Badge */
+  .badge { display: inline-block; padding: 6px 14px; border: 1px solid var(--matrix); border-radius: 999px; font-size: 11px; color: var(--matrix); text-transform: uppercase; font-weight: 600; letter-spacing: 0.08em; margin-bottom: 20px; animation: pulse-glow 2s infinite; }
+  @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.5); } 50% { box-shadow: 0 0 0 8px rgba(0, 255, 0, 0); } }
+
+  /* CTA Shimmer */
+  .cta-shimmer { display: inline-block; padding: 16px 36px; background: linear-gradient(90deg, var(--cta), #ff5050, var(--cta)); background-size: 200% 100%; color: white; font-family: 'Fira Code'; font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em; border: 0; border-radius: 8px; cursor: pointer; box-shadow: 0 8px 24px rgba(255, 51, 51, 0.4); animation: shimmer 3s infinite; transition: transform 0.3s; text-decoration: none; }
+  .cta-shimmer:hover { transform: translateY(-2px) scale(1.03); }
+  @keyframes shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+
+  /* Section dividers */
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--matrix-dim), transparent); margin: 60px 0; }
+
+  /* Pricing lots */
+  .lots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 30px 0; }
+  @media (max-width: 768px) { .lots-grid { grid-template-columns: 1fr; } }
+  .lot { background: var(--dark-700); border: 2px dashed rgba(0, 255, 0, 0.4); border-radius: 8px; padding: 24px; text-align: center; }
+  .lot.featured { border-color: var(--matrix); border-style: solid; box-shadow: 0 0 24px rgba(0, 255, 0, 0.2); }
+  .lot .lot-label { font-family: 'Fira Code'; font-size: 12px; color: var(--matrix); text-transform: uppercase; letter-spacing: 0.08em; }
+  .lot .lot-price { font-family: 'Inter'; font-size: 44px; font-weight: 900; color: white; margin: 10px 0; }
+  .lot .lot-price .currency { font-size: 22px; vertical-align: top; }
+  .lot .lot-suffix { font-family: 'Fira Code'; font-size: 12px; color: var(--body-text); margin-bottom: 14px; }
+
+  /* Modules */
+  .modules-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  @media (max-width: 640px) { .modules-grid { grid-template-columns: 1fr; } }
+  .module { background: var(--dark-800); border: 2px dashed rgba(0, 255, 0, 0.4); border-radius: 8px; padding: 24px; transition: border-color 0.3s; }
+  .module:hover { border-color: var(--matrix); }
+  .module-num { font-family: 'Fira Code'; font-size: 60px; font-weight: 700; background: linear-gradient(135deg, var(--matrix), var(--matrix-dark)); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1; margin-bottom: 12px; }
+  .module h3 { font-family: 'Inter'; font-size: 22px; font-weight: 800; color: white; margin: 8px 0; }
+  .module p { color: var(--body-text); font-size: 14.5px; line-height: 1.6; }
+
+  /* Lists */
+  ul.bullet-list { list-style: none; padding: 0; margin: 0; }
+  ul.bullet-list li { padding: 12px 0 12px 28px; position: relative; color: var(--body-text); font-size: 15.5px; border-bottom: 1px solid rgba(0, 255, 0, 0.08); }
+  ul.bullet-list li::before { content: '>'; position: absolute; left: 6px; color: var(--matrix); font-family: 'Fira Code'; font-weight: 700; }
+
+  /* FAQ */
+  details.faq { background: var(--dark-800); border: 2px dashed rgba(0, 255, 0, 0.3); border-radius: 8px; padding: 18px 22px; margin-bottom: 12px; cursor: pointer; }
+  details.faq summary { font-family: 'Fira Code'; font-weight: 600; color: white; list-style: none; }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary::after { content: '+'; float: right; color: var(--matrix); transition: transform 0.3s; font-size: 20px; }
+  details.faq[open] summary::after { transform: rotate(45deg); }
+  details.faq p { margin-top: 12px; color: var(--body-text); font-size: 14px; line-height: 1.6; }
+
+  /* Footer */
+  footer { padding: 50px 0 30px; text-align: center; border-top: 1px solid var(--matrix-dim); }
+  footer .copy { color: var(--body-text); font-size: 13px; }
+  footer .copy::after { content: '_'; color: var(--matrix); animation: blink-cursor 1s step-end infinite; }
+  @keyframes blink-cursor { 50% { opacity: 0; } }
+  footer .disc { color: rgba(192, 192, 192, 0.5); font-size: 12px; max-width: 700px; margin: 16px auto 0; }
+</style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+
+<nav>
+  <div class="container">
+    <div class="nav-logo">{{NOME_PRODUTO}}</div>
+    <div class="live-indicator">
+      <span class="live-dot"></span>
+      <span>LIVE</span>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <section class="hero">
+    <div class="container">
+      <span class="badge">{{BADGE_HERO}}</span>
+      <h1>{{TITULO_PRINCIPAL}} <span class="glow">{{TITULO_DESTAQUE}}</span></h1>
+      <p class="subtitle">{{SUBTITULO}}</p>
+      <a href="{{CTA_LINK}}" class="cta-shimmer">{{CTA_TEXTO}}</a>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="container">
+      <h2 style="font-family: 'Inter'; font-size: clamp(32px, 4vw, 44px); font-weight: 900; color: white; margin-bottom: 24px;">/ MODULOS</h2>
+      <div class="modules-grid">
+        {{MODULOS_HTML}}
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="container">
+      <h2 style="font-family: 'Inter'; font-size: clamp(32px, 4vw, 44px); font-weight: 900; color: white; margin-bottom: 24px;">/ PRA QUEM E</h2>
+      <ul class="bullet-list">
+        {{PARA_QUEM_HTML}}
+      </ul>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="container">
+      <h2 style="font-family: 'Inter'; font-size: clamp(32px, 4vw, 44px); font-weight: 900; color: white; margin-bottom: 24px;">/ DETALHES DO EVENTO</h2>
+      <div class="terminal-card">
+        <div class="body">
+          <p class="terminal-shell">DATA: {{DATA_EVENTO}}</p>
+          <p class="terminal-shell">DURACAO: {{DURACAO_EVENTO}}</p>
+          <p class="terminal-shell">FORMATO: {{FORMATO_EVENTO}}</p>
+          <p class="terminal-shell">PLATAFORMA: {{PLATAFORMA_EVENTO}}</p>
+          <p class="terminal-comment" style="margin-top: 14px;">Acesso liberado apos confirmacao do pagamento</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="container">
+      <h2 style="font-family: 'Inter'; font-size: clamp(32px, 4vw, 44px); font-weight: 900; color: white; margin-bottom: 12px;">/ LOTES</h2>
+      <p style="color: var(--body-text); margin-bottom: 24px;">Quanto antes voce entrar, menor o investimento.</p>
+      <div class="lots-grid">
+        {{LOTES_HTML}}
+      </div>
+
+      <div style="text-align: center; margin-top: 32px;">
+        <a href="{{CTA_LINK}}" class="cta-shimmer">{{CTA_TEXTO}}</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="container">
+      <h2 style="font-family: 'Inter'; font-size: clamp(32px, 4vw, 44px); font-weight: 900; color: white; margin-bottom: 24px;">/ FAQ</h2>
+      {{FAQ_HTML}}
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p class="copy">{{NOME_PRODUTO}} / {{ANO}} / Todos os direitos reservados</p>
+    <p class="disc">{{DISCLAIMER}}</p>
+  </div>
+</footer>
+
+<script>
+  // Matrix Rain
+  const c = document.getElementById('matrix-canvas');
+  const ctx = c.getContext('2d');
+  function resize() { c.width = innerWidth; c.height = innerHeight; }
+  resize();
+  addEventListener('resize', resize);
+  const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF'.split('');
+  const fontSize = 14;
+  let columns = Math.floor(c.width / fontSize);
+  const drops = Array(columns).fill(1);
+  function draw() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.06)';
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillStyle = '#00FF00';
+    ctx.font = fontSize + 'px monospace';
+    for (let i = 0; i < drops.length; i++) {
+      const text = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > c.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    }
+  }
+  setInterval(draw, 60);
+</script>
+
+<!-- {{UTM_SCRIPT}} -->
+
+</body>
+</html>

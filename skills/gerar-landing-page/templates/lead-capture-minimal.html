@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{NOME_PRODUTO}}</title>
+
+<!-- {{PIXEL_HEAD}} -->
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #fafaf7;
+    --fg: #0d0d12;
+    --fg-dim: #555569;
+    --border: #e5e5ec;
+    --accent: #6366f1;
+    --accent-2: #8b5cf6;
+    --cta: linear-gradient(135deg, #6366f1, #8b5cf6);
+    --error: #dc2626;
+    --success: #16a34a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--fg); font-family: 'DM Sans', system-ui, sans-serif; min-height: 100vh; }
+  h1, h2, h3, .display { font-family: 'Inter', system-ui, sans-serif; }
+
+  /* Container */
+  .container { max-width: 560px; margin: 0 auto; padding: 0 24px; }
+  main { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 48px 0; }
+
+  /* Card */
+  .card { background: white; border: 1px solid var(--border); border-radius: 24px; padding: 48px 36px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.06); }
+
+  /* Header */
+  .badge { display: inline-block; padding: 6px 14px; background: rgba(99, 102, 241, 0.1); color: var(--accent); border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; margin-bottom: 20px; }
+  h1 { font-size: clamp(28px, 4vw, 38px); font-weight: 800; line-height: 1.15; color: var(--fg); margin-bottom: 14px; letter-spacing: -0.02em; }
+  h1 .gradient { background: var(--cta); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  p.lead { color: var(--fg-dim); font-size: 16.5px; line-height: 1.6; margin-bottom: 32px; }
+
+  /* Form */
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--fg); margin-bottom: 6px; }
+  .field input, .field select { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; background: white; color: var(--fg); font-family: inherit; font-size: 15px; transition: all 0.2s; outline: none; }
+  .field input:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+  .field input.error { border-color: var(--error); }
+  .field-error { color: var(--error); font-size: 12px; margin-top: 4px; display: none; }
+  .field-error.visible { display: block; }
+
+  /* Submit */
+  button.submit { width: 100%; padding: 16px 24px; background: var(--cta); color: white; border: 0; border-radius: 12px; font-family: 'Inter'; font-weight: 700; font-size: 15.5px; letter-spacing: 0.02em; cursor: pointer; transition: all 0.25s; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3); margin-top: 14px; }
+  button.submit:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4); }
+  button.submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* Beneficios */
+  .benefits { margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--border); }
+  .benefits-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--fg-dim); letter-spacing: 0.06em; margin-bottom: 14px; }
+  ul.benefits-list { list-style: none; padding: 0; }
+  ul.benefits-list li { padding: 8px 0 8px 28px; position: relative; color: var(--fg); font-size: 14.5px; }
+  ul.benefits-list li::before { content: '\2713'; position: absolute; left: 4px; top: 8px; color: var(--accent); font-weight: 800; }
+
+  /* Footer */
+  .footer-note { margin-top: 28px; text-align: center; font-size: 12px; color: var(--fg-dim); }
+  .footer-note a { color: var(--accent); text-decoration: none; }
+
+  /* Success state */
+  .success-card { display: none; text-align: center; padding: 60px 36px; }
+  .success-card.visible { display: block; }
+  .success-card.visible ~ .card { display: none; }
+  .success-icon { width: 72px; height: 72px; border-radius: 50%; background: rgba(22, 163, 74, 0.1); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: var(--success); font-size: 36px; font-weight: 800; }
+  .success-card h2 { font-size: 28px; font-weight: 800; color: var(--fg); margin-bottom: 12px; }
+  .success-card p { color: var(--fg-dim); font-size: 16px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="container">
+
+    <div id="form-card" class="card">
+      <span class="badge">{{BADGE}}</span>
+      <h1>{{TITULO_PRINCIPAL}} <span class="gradient">{{TITULO_DESTAQUE}}</span></h1>
+      <p class="lead">{{SUBTITULO}}</p>
+
+      <form id="lead-form" novalidate>
+        <div class="field">
+          <label for="nome">Seu nome</label>
+          <input type="text" id="nome" name="nome" autocomplete="name" required />
+          <span class="field-error" id="err-nome">Coloca seu nome</span>
+        </div>
+
+        <div class="field">
+          <label for="email">Seu melhor email</label>
+          <input type="email" id="email" name="email" autocomplete="email" required />
+          <span class="field-error" id="err-email">Email invalido</span>
+        </div>
+
+        <div class="field">
+          <label for="whatsapp">WhatsApp (com DDD)</label>
+          <input type="tel" id="whatsapp" name="whatsapp" placeholder="(11) 9 9999-9999" autocomplete="tel" required />
+          <span class="field-error" id="err-whatsapp">Numero invalido</span>
+        </div>
+
+        <button type="submit" class="submit">{{CTA_TEXTO}}</button>
+      </form>
+
+      <div class="benefits">
+        <div class="benefits-title">O que voce recebe</div>
+        <ul class="benefits-list">
+          {{BENEFICIOS_HTML}}
+        </ul>
+      </div>
+
+      <p class="footer-note">
+        Ao enviar, voce aceita receber emails de {{NOME_PRODUTO}}. Pode descadastrar a qualquer momento.
+      </p>
+    </div>
+
+    <div id="success-card" class="success-card">
+      <div class="success-icon">&check;</div>
+      <h2>Tudo certo!</h2>
+      <p>Mandei o material no seu email. Confere a caixa de entrada nos proximos minutos. Se nao chegar, da uma olhada no spam.</p>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  const form = document.getElementById('lead-form');
+  const formCard = document.getElementById('form-card');
+  const successCard = document.getElementById('success-card');
+
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function validatePhone(phone) {
+    const cleaned = phone.replace(/\D/g, '');
+    return cleaned.length >= 10;
+  }
+
+  function showError(id, show) {
+    const input = document.getElementById(id);
+    const err = document.getElementById('err-' + id);
+    input.classList.toggle('error', show);
+    err.classList.toggle('visible', show);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nome = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const whatsapp = document.getElementById('whatsapp').value.trim();
+
+    let valid = true;
+    if (!nome) { showError('nome', true); valid = false; } else showError('nome', false);
+    if (!validateEmail(email)) { showError('email', true); valid = false; } else showError('email', false);
+    if (!validatePhone(whatsapp)) { showError('whatsapp', true); valid = false; } else showError('whatsapp', false);
+
+    if (!valid) return;
+
+    const btn = form.querySelector('button.submit');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    try {
+      // Substituir pela URL real do endpoint do aluno
+      const endpoint = '{{ENDPOINT_LEAD}}';
+      if (endpoint && endpoint.startsWith('http')) {
+        await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome, email, whatsapp, source: '{{NOME_PRODUTO}}' })
+        });
+      }
+
+      formCard.style.display = 'none';
+      successCard.classList.add('visible');
+
+      // Tracking de conversao (opcional)
+      if (window.fbq) fbq('track', 'Lead');
+      if (window.gtag) gtag('event', 'generate_lead');
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = '{{CTA_TEXTO}}';
+      alert('Deu erro pra enviar. Tenta de novo em instantes.');
+    }
+  });
+</script>
+
+<!-- {{UTM_SCRIPT}} -->
+
+</body>
+</html>
