@@ -20,7 +20,7 @@ Recomendacoes:
 
 Importante na hora de comprar:
 - Sistema operacional: **Ubuntu 22.04** (ou 24.04)
-- Mínimo: **4 GB RAM** (8 GB recomendado se for usar prospect Insta + Maps)
+- Mínimo: **4 GB RAM** (8 GB recomendado para subagentes paralelos)
 - Disco: **mínimo 50 GB**
 - Localizacao: qualquer uma. Brasil (Sao Paulo) reduz latencia, mas EUA/Europa funciona igual.
 

@@ -1,24 +1,20 @@
 ========================================
 COMO CRIAR UM AGENTE CLAUDE CODE + TELEGRAM v3
-(Bot externo Python + Prospect Insta/Maps + agent-manager + Naia Rita)
+(Bot externo Python + agent-manager + subagentes)
 ========================================
 
 Repositorio:
 https://github.com/{{GITHUB_USERNAME}}/agente-claude-telegram-setup-alunos-denderson
 
 VERSAO 3 (abril 2026) - novidades vs v2:
-- Prospect Instagram via HikerAPI + Tandem (DM real, anti-ban)
-- Prospect Google Maps via Places + Geocoding
-- Bulk DM Gen (50-200 copies em paralelo)
 - agent-manager.py via PM2 (porta 3600 + Caddy + Cloudflare tunnel)
-- Tunnel watchdog (https sempre online)
-- db_queue (jobs em fila com retry)
-- Padrao Naia + Naia Rita (orquestradora + executora dedicada)
+- 5 subagentes especializados (paulo-dev, juliana-ops, jonathan-copy, rafael-projetos, davi-sdr)
+- Audio bidirecional (Whisper + ElevenLabs)
+- Memoria vetorial PostgreSQL + pgvector
 
 O que voce tem no final:
 - Agente principal (ex: Jonas-bot) que conversa via Telegram
 - 5 subagentes (paulo-dev, juliana-ops, jonathan-copy, rafael-projetos, davi-sdr)
-- (Opcional) Naia Rita pra rodar prospect em paralelo
 - Memoria PostgreSQL + pgvector
 - Bot Python sempre vivo (independente do Claude)
 - Audio bidirecional (Whisper + ElevenLabs)
@@ -31,13 +27,11 @@ PRE-REQUISITOS
 ========================================
 
 - VPS Ubuntu 22.04+ ou macOS 13+
-- 8 GB RAM, 50 GB disco recomendado
+- 4 GB RAM minimo, 8 GB recomendado
 - Conta Claude Pro ou Max (do aluno)
 - Conta Telegram (do aluno)
 - (Opcional) OPENAI_API_KEY (audio entrada)
 - (Opcional) ELEVENLABS_API_KEY (audio saida)
-- (Opcional) HIKERAPI_KEY + Tandem instalado (prospect Insta)
-- (Opcional) GOOGLE_MAPS_API_KEY (prospect local)
 - (Opcional) GitHub PAT + Vercel + Cloudflare DNS (deploy publico)
 
 
@@ -117,22 +111,19 @@ Obrigatorias:
 Opcionais (pode adicionar depois):
 6. OPENAI_API_KEY
 7. ELEVENLABS_API_KEY + VOICE_ID
-8. HIKERAPI_KEY + TANDEM_TOKEN (prospect Insta)
-9. GOOGLE_MAPS_API_KEY (prospect local)
-10. GITHUB_TOKEN + VERCEL_TOKEN + CLOUDFLARE_API_TOKEN (deploy)
-11. Config Clone SDR (oferta, pitch, preco, link)
+8. GITHUB_TOKEN + VERCEL_TOKEN + CLOUDFLARE_API_TOKEN (deploy)
+9. Config Clone SDR (oferta, pitch, preco, link)
 
 O Claude faz tudo sozinho:
 - Cria usuario AGENTE
-- Cria DB PostgreSQL com schema completo (vetorial + db_queue + prospect_leads)
+- Cria DB PostgreSQL com schema (vetorial)
 - Cria /opt/AGENTE/ + /opt/AGENTE-bot/
 - Cria CLAUDE.md personalizado (3 fases + orquestradora)
 - Cria 5 subagentes
 - Cria bot.py (audio bidirecional)
 - Cria agent-manager.py via PM2 (porta 3600)
 - Configura Caddy + Cloudflare tunnel
-- (Se opcional) Cria Naia Rita + scripts prospect
-- 2 systemd services + 4 crons
+- 2 systemd services + crons de healthcheck/backup
 - Inicia tudo, valida, entrega
 
 Tempo: 5-15 min.
@@ -158,45 +149,6 @@ Audio:
 
 
 ========================================
-PASSO 8 - (OPCIONAL) PROSPECT INSTAGRAM
-========================================
-
-Se ativou Naia Rita + HikerAPI + Tandem:
-
-Disparar busca por hashtag:
-   curl -X POST https://AGENTE.dominio.com/prospect/insta \
-     -H 'Content-Type: application/json' \
-     -d '{"hashtag":"musicaonline","limit":50}'
-
-Disparar por followers de concorrente:
-   curl -X POST https://AGENTE.dominio.com/prospect/insta \
-     -H 'Content-Type: application/json' \
-     -d '{"username":"concorrenteX","limit":50}'
-
-Bulk DM gen:
-   curl -X POST https://AGENTE.dominio.com/dm/bulk-gen \
-     -H 'Content-Type: application/json' \
-     -d '{"lead_ids":[1,2,3],"template_id":"intro_musica"}'
-
-Ver leads coletados:
-   sudo -u AGENTE psql -d AGENTE_memory \
-     -c "SELECT username, source, status FROM prospect_leads ORDER BY created_at DESC LIMIT 20;"
-
-
-========================================
-PASSO 9 - (OPCIONAL) PROSPECT GOOGLE MAPS
-========================================
-
-Disparar busca local:
-   curl -X POST https://AGENTE.dominio.com/prospect/maps \
-     -H 'Content-Type: application/json' \
-     -d '{"keyword":"clinica de estetica","city":"Sao Paulo","radius":10000}'
-
-Retorna nome, endereco, telefone, website, rating.
-Salva em prospect_leads com source=gmaps.
-
-
-========================================
 ARQUITETURA v3 (RESUMIDA)
 ========================================
 
@@ -208,13 +160,11 @@ Telegram <-> [Bot Python systemd 24/7] <-> tmux + outbox JSON
                                                 v
                                   [agent-manager.py PM2 :3600]
                                                 |
-              +----+----+----+-------+-----+----+----+
-              v    v    v    v       v     v    v    v
-          paulo juliana jon rafael davi-SDR  Rita  ...
+                  +----+----+----+-------+-----+----+
+                  v    v    v    v       v          v
+              paulo juliana jon rafael davi-SDR    ...
 
               [Caddy reverse proxy] -> https://AGENTE.dominio.com
-              [Cloudflare tunnel watchdog] -> garante uptime
-              [db_queue PostgreSQL] -> jobs persistentes com retry
 
 
 PROTOCOLO DE CONVERSA (REGRA SUPREMA):
@@ -257,14 +207,6 @@ Ver memoria:
    sudo -u AGENTE psql -d AGENTE_memory \
      -c "SELECT COUNT(*) FROM conversation_history"
 
-Ver leads prospect:
-   sudo -u AGENTE psql -d AGENTE_memory \
-     -c "SELECT * FROM prospect_leads ORDER BY created_at DESC LIMIT 10"
-
-Ver job queue:
-   sudo -u AGENTE psql -d AGENTE_memory \
-     -c "SELECT id,type,status,attempts FROM job_queue WHERE status != 'done' LIMIT 20"
-
 
 ========================================
 CRONS ATIVOS
@@ -274,10 +216,6 @@ CRONS ATIVOS
 0 */2 * * *   consolidate-conversations.py
 30 * * * *    heartbeat.sh
 0 9 * * *     daily-memory-report.py
-*/5 * * * *   /opt/AGENTE/cron-scripts/tunnel-watchdog.sh
-*/15 * * * *  /opt/AGENTE/cron-scripts/process-job-queue.py
-*/30 * * * *  /opt/AGENTE/cron-scripts/prospect-insta.py    (se ativado)
-0 */2 * * *   /opt/AGENTE/cron-scripts/prospect-maps.py     (se ativado)
 
 
 ========================================
@@ -288,13 +226,9 @@ CUSTOS MENSAIS
 - Claude Max: US$100 (Pro tambem serve)
 - OpenAI Whisper: ~US$0.006/min audio
 - ElevenLabs: free 10k chars OU $5/mes basic
-- HikerAPI (prospect): $30-50/mes
-- Tandem: $20/mes
-- Google Maps API: $5-15/mes
 - Telegram + PostgreSQL: gratis
 
-Total sem prospect: R$600-700/mes
-Total com prospect: R$800-1000/mes
+Total: R$600-700/mes
 
 
 ========================================
@@ -307,17 +241,7 @@ PROBLEMAS COMUNS
    Se tiver telegram, REMOVE e reinicia.
 
 "https://AGENTE.dominio.com da 502"
-   Tunnel caiu. tunnel-watchdog.sh deveria recriar em 5 min.
    Manual: pm2 restart agent-manager && systemctl reload caddy
-
-"Naia Rita nao envia DM Insta"
-   Tandem aberto no Mac do dono?
-   TANDEM_TOKEN valido no .env?
-   Limite diario nao estourou? (50-100 DMs/dia)
-
-"Job queue parado"
-   crontab -u AGENTE -l | grep process-job-queue
-   Roda manual: sudo -u AGENTE python3 /opt/AGENTE/cron-scripts/process-job-queue.py
 
 "Audio nao transcreve / nao sai"
    Confere chaves no .env do bot:

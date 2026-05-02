@@ -103,15 +103,15 @@ Apos rodar o BMAD e gerar o dossie, esses sao os tickets sugeridos:
 | 500k a 1M | R$ 1.497 | > 99% |
 | 1M+ | R$ 2.000+ | > 99% |
 
-Custo de producao: ~US$0,025 por dossie (HikerAPI + Gemini).
+Custo de producao: depende do scraper escolhido pelo aluno + Gemini (~US$0,02 por chamada).
 
 ## Diferenciais do dossie BMAD vs analise comum
 
-1. **Dados reais**: HikerAPI retorna numeros oficiais (seguidores, engajamento, lista de posts).
+1. **Dados reais**: o coletor escolhido retorna numeros (seguidores, engajamento, lista de posts).
 2. **Plano executavel**: 30 dias com posts dia a dia, nao apenas conselhos vagos.
 3. **Site cinematografico**: cliente recebe URL profissional no SUBDOMINIO DO ALUNO (USERNAME.DOMINIO_BASE, ex: joaodasilva.meunegocio.com.br), nao PDF.
 4. **Meta numerica**: +10% seguidores em 30 dias por padrao, ou foco em vendas se pedido.
-5. **Velocidade**: 3 a 5 minutos do @username ao link entregue.
+5. **Velocidade**: poucos minutos do @username ao link entregue, dependendo do coletor.
 
 ## Como o aluno configura o dominio dele
 

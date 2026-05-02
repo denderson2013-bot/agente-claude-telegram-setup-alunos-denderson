@@ -1,4 +1,4 @@
-# SETUP-AGENTE.md v3 - Instalacao automatica do agente Claude + Telegram (Bot Externo + Prospect + agent-manager)
+# SETUP-AGENTE.md v3 - Instalacao automatica do agente Claude + Telegram (Bot Externo + agent-manager)
 
 > Claude, esse arquivo e pra voce executar. Pode ser executado em DOIS modos:
 >
@@ -12,7 +12,6 @@
 > - Bot externo Python (audio bidirecional)
 > - agent-manager.py via PM2 (porta 3600 + Caddy + Cloudflare tunnel)
 > - (Opcional) Clone do {{DONO}} SDR personalizado
-> - (Opcional) Naia Rita pra prospect Insta + Maps
 
 ---
 
@@ -116,12 +115,10 @@ Apos systemd subir e bot estar online, peca pro aluno mandar um `/start` no bot 
 A v2 ja tinha bot Python externo + Whisper + ElevenLabs. A v3 adiciona:
 
 1. **agent-manager.py** (Python via PM2): gerencia jobs longos sem travar a Naia. Roda na porta 3600 com proxy reverso via Caddy. Acessivel em `https://AGENTE.dominio.com`.
-2. **Prospect Instagram** via HikerAPI + Tandem: pesquisa leads no Insta (followers de concorrentes, hashtags, locations) e envia DM real pelo navegador (anti-ban).
-3. **Prospect Google Maps**: Places API + Geocoding pra leads locais por nicho + cidade.
-4. **Bulk DM Gen**: gera 50-200 copies personalizadas em paralelo (Claude API ou subagente jonathan-copy).
-5. **Tunnel watchdog**: garante `https://AGENTE.dominio.com` sempre online (recria Cloudflare tunnel se cair).
-6. **db_queue resiliencia**: tabela `job_queue` no PostgreSQL pra fila de jobs com retry exponencial.
-7. **Padrao Naia + Naia Rita**: Naia orquestra conversa com o Chefe, Rita roda prospect em paralelo (subagente dedicado).
+2. **Suite de subagentes especializados**: paulo-dev, juliana-ops, jonathan-copy, rafael-projetos, davi-sdr.
+3. **Memoria vetorial PostgreSQL + pgvector**: HNSW index pra busca semantica em milhares de mensagens.
+4. **Bot externo robusto**: Restart=always via systemd, polling continuo independente do Claude.
+5. **Audio bidirecional**: Whisper PT-BR (entrada) e ElevenLabs TTS (saida).
 
 ---
 
@@ -164,7 +161,6 @@ Esse repo e a versao publica/sanitizada. Antes de qualquer ETAPA tecnica, voce, 
 | 18 | `{{DOMINIO_CRM}}` | "(Opcional) Dominio do seu CRM" | `crm.meusite.com` |
 | 19 | `{{DOMINIO_CLIENTE_EXEMPLO}}` | "(Opcional) Subdominio exemplo de cliente" | `cliente1.meusite.com` |
 | 20 | `{{DOMINIO_CLIENTE}}` | "(Opcional) Dominio de um cliente real (so pra exemplo)" | `cliente1.com.br` |
-| 21 | `{{TANDEM_TOKEN}}` | "(Opcional, so se for usar prospect Insta) Token Tandem do painel" | `abcd1234...` |
 | 22 | `{{PRODUTO_DONO}}` | "Nome do seu produto/SaaS principal" | `Meu CRM` |
 | 23 | `{{PRODUTO_DONO_SLUG}}` | "Slug do produto" | `meu-crm` |
 | 24 | `{{MENTORIA_DONO}}` | "(Opcional) Nome da sua mentoria" | `Mentoria X` |
@@ -266,9 +262,6 @@ Pergunta ao aluno e guarda:
 | `OPENAI_API_KEY` | platform.openai.com/api-keys | opcional (audio) |
 | `ELEVENLABS_API_KEY` | elevenlabs.io/profile | opcional (audio) |
 | `ELEVENLABS_VOICE_ID` | elevenlabs.io/voice-library | opcional |
-| `HIKERAPI_KEY` | hikerapi.com (assinatura) | opcional (prospect Insta) |
-| `TANDEM_TOKEN` | gerado pelo Tandem app no Mac do dono | opcional (prospect Insta) |
-| `GOOGLE_MAPS_API_KEY` | console.cloud.google.com (Places + Geocoding) | opcional (prospect Maps) |
 | `GITHUB_TOKEN` | github.com/settings/tokens (PAT classic) | opcional (deploy) |
 | `VERCEL_TOKEN` | vercel.com/account/tokens | opcional (deploy) |
 | `CLOUDFLARE_API_TOKEN` | dash.cloudflare.com/profile/api-tokens (DNS edit) | opcional (tunnel) |
@@ -311,9 +304,6 @@ Aplica `schema.sql` (criar arquivo `/opt/AGENTE/schema.sql` com as tabelas):
 - `memory_chunks` (id, source, content, embedding, metadata jsonb)
 - `memory_facts` (id, fact, embedding, created_at)
 - `transcript_chunks` (id, source_call, content, embedding)
-- **`job_queue`** (id, type, payload jsonb, status, attempts, scheduled_for, created_at) - **db_queue v3**
-- **`prospect_leads`** (id, source, username, profile_data jsonb, status, dm_sent_at) - **prospect v3**
-- **`prospect_dm_log`** (id, lead_id, copy, sent_at, response_received) - **prospect v3**
 
 Cria index HNSW em todas as colunas `embedding`:
 ```sql
@@ -321,8 +311,6 @@ CREATE INDEX ON conversation_history USING hnsw (embedding vector_cosine_ops);
 CREATE INDEX ON memory_chunks USING hnsw (embedding vector_cosine_ops);
 CREATE INDEX ON memory_facts USING hnsw (embedding vector_cosine_ops);
 CREATE INDEX ON transcript_chunks USING hnsw (embedding vector_cosine_ops);
-CREATE INDEX ON job_queue (status, scheduled_for);
-CREATE INDEX ON prospect_leads (source, status);
 ```
 
 Aplica:
@@ -423,12 +411,9 @@ Cada um com personalidade dedicada e missao clara.
 ## ETAPA 7 - SUBIR AGENT-MANAGER.PY VIA PM2
 
 `agent-manager.py` e um servico HTTP Python (FastAPI ou Flask) que expoe endpoints internos pra:
-- Criar jobs no `job_queue`
-- Consultar status
-- Disparar prospect (Insta/Maps)
-- Bulk DM gen
-- Listar leads
 - Trigger subagentes em background
+- Webhooks externos (Insta DM, integracoes)
+- Healthcheck e status
 
 Roda na porta 3600.
 
@@ -436,14 +421,9 @@ Roda na porta 3600.
 mkdir -p /opt/AGENTE/agent-manager
 cd /opt/AGENTE/agent-manager
 
-# Copia agent-manager.py do repo (template Python FastAPI)
-# Endpoints principais:
-#   POST /jobs         - criar job no job_queue
-#   GET /jobs/:id      - status
-#   POST /prospect/insta - dispara prospect Insta
-#   POST /prospect/maps  - dispara prospect Maps
-#   POST /dm/bulk-gen  - gera N copies
-#   GET /leads         - lista leads do prospect_leads
+# Cria agent-manager.py minimo (FastAPI):
+#   GET /health        - healthcheck
+#   POST /webhook/...  - receber eventos externos
 
 pip3 install fastapi uvicorn psycopg2-binary requests anthropic
 
@@ -470,8 +450,6 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/ZONE_ID/dns_records" \
   --data '{"type":"A","name":"AGENTE","content":"VPS_IP","proxied":true}'
 ```
 
-(Tunnel watchdog opcional: cron a cada 5 min checa `curl -I https://AGENTE.dominio.com` e recria tunnel se 502.)
-
 ---
 
 ## ETAPA 8 - SUBIR CLONE DO {{DONO_UPPER}} SDR (CONFIG PERSONALIZADO)
@@ -488,10 +466,10 @@ Se sim, coleta:
 
 Cria `/opt/AGENTE/.claude/agents/clone-sdr.md` com a personalidade configurada (rapport + SPIN + agendamento).
 
-Configura webhook (se aluno tem GHL/CRM):
+Configura webhook (se aluno tem CRM/integracao):
 ```bash
 # Endpoint no agent-manager: POST /webhook/insta-dm
-# Recebe DM, salva no prospect_dm_log, dispara subagente clone-sdr
+# Recebe DM, salva no banco, dispara subagente clone-sdr
 ```
 
 Atualiza `.env`:
@@ -506,37 +484,7 @@ SDR_HOURS=09-22
 
 ---
 
-## ETAPA 9 - (OPCIONAL) SUBIR NAIA RITA PROSPECCAO
-
-Pre-requisitos:
-- `HIKERAPI_KEY` no `.env`
-- Tandem instalado e configurado no Mac do dono (gera `TANDEM_TOKEN`)
-- (Opcional) `GOOGLE_MAPS_API_KEY` pra prospect local
-
-Cria `/opt/AGENTE/.claude/agents/naia-rita.md`:
-- Missao: rodar prospect Insta + Maps em paralelo
-- Tools: HikerAPI client, Tandem client, GMaps client, jonathan-copy delegate
-- Workflow: busca leads -> filtra ICP -> gera DM personalizada -> envia via Tandem -> log no prospect_dm_log
-- Limites: 50-100 DMs/dia (anti-ban), random delay 30-180s entre envios
-
-Cria scripts auxiliares em `/opt/AGENTE/cron-scripts/`:
-- `prospect-insta.py` (busca via HikerAPI, salva em `prospect_leads`)
-- `prospect-maps.py` (Places + Geocoding, salva em `prospect_leads`)
-- `bulk-dm-gen.py` (gera copies em batch via Claude API)
-- `tandem-send.py` (envia DM via Tandem token)
-- `tunnel-watchdog.sh` (cron 5 min, recria tunnel se cair)
-
-Crons:
-```cron
-*/30 * * * * /opt/AGENTE/cron-scripts/prospect-insta.py
-0 */2 * * * /opt/AGENTE/cron-scripts/prospect-maps.py
-*/5 * * * * /opt/AGENTE/cron-scripts/tunnel-watchdog.sh
-*/15 * * * * /opt/AGENTE/cron-scripts/process-job-queue.py
-```
-
----
-
-## ETAPA 10 - RESTART E VALIDAR
+## ETAPA 9 - RESTART E VALIDAR
 
 Reinicia tudo:
 ```bash
@@ -576,7 +524,6 @@ Se tudo OK, manda mensagem final pro aluno:
 - Comandos uteis (logs, restart, ver tela)
 - Custos mensais
 - Como customizar subagentes
-- (Se ativou prospect) primeiros 10 leads ja na fila
 
 ---
 
@@ -615,18 +562,6 @@ nano /opt/AGENTE/.claude/agents/paulo-dev.md
 # nao precisa restart
 ```
 
-**Ver leads do prospect:**
-```bash
-sudo -u AGENTE psql -d AGENTE_memory -c "SELECT username, source, status FROM prospect_leads ORDER BY created_at DESC LIMIT 20;"
-```
-
-**Disparar prospect manual:**
-```bash
-curl -X POST https://AGENTE.dominio.com/prospect/insta \
-  -H 'Content-Type: application/json' \
-  -d '{"keyword":"mentoria de musica","limit":50}'
-```
-
 ---
 
 ## TROUBLESHOOTING
@@ -637,9 +572,7 @@ curl -X POST https://AGENTE.dominio.com/prospect/insta \
 | Mensagens duplicadas | Confere se `enabledPlugins.telegram` NAO esta no `~/.claude/settings.json` (foi removido na v3) |
 | Audio nao transcreve | Confere `OPENAI_API_KEY` no `/opt/AGENTE-bot/.env` |
 | Audio nao sai | Confere `ELEVENLABS_API_KEY` |
-| `https://AGENTE.dominio.com` 502 | Tunnel caiu. Cron `tunnel-watchdog.sh` deveria reiniciar em 5 min. Se nao, manual: `pm2 restart agent-manager && systemctl reload caddy` |
-| Prospect Insta nao envia DM | Confere TANDEM_TOKEN valido. Tandem precisa estar aberto no Mac do dono. |
-| Job queue parado | Cron `process-job-queue.py` rodando? `crontab -u AGENTE -l` |
+| `https://AGENTE.dominio.com` 502 | Manual: `pm2 restart agent-manager && systemctl reload caddy` |
 | Agente nao lembra conversa antiga | Cron `consolidate-conversations.py` ativo? Banco crescendo? |
 | VPS reboot e nao volta | `systemctl is-enabled AGENTE AGENTE-bot` deve dar `enabled` |
 

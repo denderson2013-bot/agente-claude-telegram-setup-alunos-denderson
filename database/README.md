@@ -1,6 +1,6 @@
 # Database Schema — naia_memory
 
-Schema completo do banco PostgreSQL usado pelo agente Naia (memoria vetorial, prospeccao, SDR, DMs, transcricoes).
+Schema completo do banco PostgreSQL usado pelo agente Naia (memoria vetorial, SDR, DMs, transcricoes).
 
 - **Engine**: PostgreSQL 14+ (testado em 14.22)
 - **Extensao obrigatoria**: `pgvector`
@@ -68,28 +68,6 @@ Sao o cerebro vetorial do agente. Embeddings de 1536 dimensoes (text-embedding-3
 | `dm_conversations` | Mensagens trocadas com leads via DM | ~9.6k linhas |
 | `dm_contact_profiles` | Perfis enriquecidos dos contatos | ~1.2k linhas |
 
-### Prospeccao B2C (4 tabelas)
-
-Pipeline de prospeccao Instagram/individual.
-
-| Tabela | Funcao | Volume prod |
-|---|---|---|
-| `prospect_runs` | Cada execucao do crawler de prospeccao | ~35 linhas |
-| `prospect_targets` | Hashtags / contas alvo configuradas | 2 linhas |
-| `prospect_leads` | Leads encontrados durante runs | ~600 linhas |
-| `prospect_dms` | DMs enviadas para leads (controle) | ~470 linhas |
-
-### Prospeccao B2B (4 tabelas)
-
-Pipeline de prospeccao corporativa.
-
-| Tabela | Funcao | Volume prod |
-|---|---|---|
-| `prospect_b2b_runs` | Runs do pipeline B2B | 1 linha |
-| `prospect_b2b_companies` | Empresas catalogadas | ~60 linhas |
-| `prospect_b2b_targets` | Decisores-alvo dentro das empresas | 1 linha |
-| `prospect_b2b_messages` | Mensagens enviadas a decisores | 0 linhas |
-
 ### SDR e vendas (4 tabelas)
 
 Sistema de agentes SDR (Davi, Lucas, Felipe, etc).
@@ -108,7 +86,7 @@ Sistema de agentes SDR (Davi, Lucas, Felipe, etc).
 |---|---|---|
 | `site_analytics` | Eventos de tracking de sites/landing pages | ~770 linhas |
 
-## Top 10 tabelas por volume
+## Top tabelas por volume
 
 1. `conversation_history` - 29.718
 2. `dm_conversations` - 9.583
@@ -116,17 +94,14 @@ Sistema de agentes SDR (Davi, Lucas, Felipe, etc).
 4. `session_transcripts` - 1.748
 5. `dm_contact_profiles` - 1.237
 6. `site_analytics` - 766
-7. `prospect_leads` - 586
-8. `prospect_dms` - 466
-9. `sdr_agent_sales` - 351
-10. `sync_status` - 328
+7. `sdr_agent_sales` - 351
+8. `sync_status` - 328
 
 ## Notas importantes
 
 - **Schema apenas, sem dados**: o arquivo `schema.sql` contem somente DDL (CREATE TABLE, INDEX, SEQUENCE, FUNCTION). Para popular um ambiente novo voce vai precisar de seeds proprios.
 - **Embeddings 1536 dim**: tabelas com coluna `embedding vector(1536)` exigem que voce gere os embeddings via OpenAI `text-embedding-3-small` para indexar conteudo novo.
 - **Indice HNSW**: as buscas semanticas (latencia <50ms em 30k+ vetores) usam indices HNSW criados no schema.
-- **Triggers**: existe a funcao `update_prospect_b2b_companies_updated_at()` que atualiza `updated_at` automaticamente.
 - **User**: o dump foi feito com `--no-owner --no-privileges` entao o schema e neutro, voce pode aplicar com qualquer usuario PostgreSQL.
 
 ## Referencia para regerar

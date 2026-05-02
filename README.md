@@ -31,13 +31,10 @@ Se voce e desenvolvedor e prefere SSH na VPS e rodar os comandos voce mesmo, sig
 Instala um agente Claude Code conectado ao Telegram em qualquer VPS Ubuntu 22+ ou macOS. Roda 24/7 via tmux + systemd (Linux) ou tmux + launchd (Mac), sobrevive reboots e auto-reinicia se cair.
 
 **v3 (abril 2026)** - upgrade massivo da v2:
-- **Prospect Instagram** via HikerAPI + Tandem (DM real, sem bot risk)
-- **Prospect Google Maps** via Places API + Geocoding (lead local)
-- **Bulk DM Gen** (gera N copies personalizadas em paralelo)
-- **Tunnel Watchdog** (Cloudflare tunnel sempre vivo)
-- **db_queue** (resiliencia: jobs em fila quando rede cai)
-- **Padrao Naia + Naia Rita** (orquestradora + executora dedicada pra prospect)
+- agent-manager.py via PM2 (porta 3600 + Caddy + Cloudflare tunnel)
 - 5 subagentes especializados (paulo-dev, juliana-ops, jonathan-copy, rafael-projetos, davi-sdr)
+- Audio bidirecional (Whisper entrada + ElevenLabs saida)
+- Memoria vetorial PostgreSQL + pgvector
 
 ## Uso
 
@@ -86,21 +83,15 @@ O Claude pergunta nome do agente, dono, tokens, configura tudo e entrega o agent
                                                           v
                                                [agent-manager.py PM2]
                                                           |
-                                  +---------+---------+---+---+----------+
-                                  v         v         v       v          v
-                              paulo-dev juliana-ops jonathan rafael    davi-sdr
-                                                                          |
-                                                                          v
-                                                              [Naia Rita - prospect]
-                                                              HikerAPI + Tandem + GMaps
+                                  +---------+---------+---+---+
+                                  v         v         v       v
+                              paulo-dev juliana-ops jonathan rafael davi-sdr
 ```
 
 5 camadas de resiliencia:
 - Bot Python systemd `Restart=always`
 - Claude Code tmux + start.sh com backoff
 - agent-manager via PM2 (auto-restart)
-- Tunnel watchdog (re-cria tunnel Cloudflare se cair)
-- db_queue (jobs persistentes em PostgreSQL, retry automatico)
 - Healthcheck a cada 2 min com auto-alerta no Telegram
 
 ## Recursos v3
@@ -111,24 +102,16 @@ O Claude pergunta nome do agente, dono, tokens, configura tudo e entrega o agent
 - 5 subagentes especializados (paulo-dev, juliana-ops, jonathan-copy, rafael-projetos, davi-sdr)
 - Memoria vetorial PostgreSQL + pgvector (HNSW index)
 - agent-manager.py via PM2 (porta 3600 + Caddy proxy HTTPS)
-- **Prospect Instagram**: HikerAPI (busca followers/hashtags/locations) + Tandem (envia DM real do navegador, evita ban)
-- **Prospect Google Maps**: Places API + Geocoding (acha negocios locais por nicho/cidade)
-- **Bulk DM gen**: gera 50-200 copies personalizadas em paralelo (1 LLM call por lead)
-- **Tunnel watchdog**: re-cria Cloudflare tunnel se cair, garantindo `https://AGENTE.dominio.com` sempre online
-- **db_queue**: fila de jobs em PostgreSQL com retry exponencial (sobrevive net flap)
-- Naia + Naia Rita pattern (Naia orquestra conversa, Rita roda prospect em paralelo)
 - Healthcheck a cada 2 min com auto-alerta
 - Backup conversas a cada 2h, relatorio diario as 9h
 
 ## Requisitos
 
-- VPS Ubuntu 22.04+ (8 GB RAM, 50 GB disco recomendado pra subagentes paralelos) **ou** macOS 13+
+- VPS Ubuntu 22.04+ (4 GB RAM minimo, 8 GB recomendado, 50 GB disco) **ou** macOS 13+
 - Conta Claude Pro ou Max
 - Conta Telegram (pra @BotFather)
 - (Opcional) OpenAI API key (audio entrada via Whisper)
 - (Opcional) ElevenLabs API key (audio saida via TTS)
-- (Opcional, prospect Insta) HikerAPI key + Tandem instalado no Mac do dono
-- (Opcional, prospect Maps) Google Maps API key (Places + Geocoding habilitados)
 - (Opcional, deploy publico) GitHub PAT + Vercel token + Cloudflare DNS token
 
 ## Custo mensal por agente (estimado)
@@ -137,13 +120,10 @@ O Claude pergunta nome do agente, dono, tokens, configura tudo e entrega o agent
 - Claude Max: US$100 (Pro tambem serve)
 - OpenAI Whisper: ~$0.006/min de audio (irrelevante)
 - ElevenLabs: free tier 10k chars/mes serve, basic $5/mes
-- HikerAPI (prospect Insta): $30-50/mes
-- Tandem (prospect Insta): $20/mes
-- Google Maps API (prospect): ~$5-15/mes (depende volume)
 - Telegram: gratis
 - PostgreSQL: gratis (local)
 
-Total por agente: ~R$600-1000/mes (sem prospect: ~R$600).
+Total por agente: ~R$600-700/mes.
 
 ## Migracao da v2 para v3
 
@@ -152,9 +132,7 @@ Se ja tem agente v2 rodando, pra adicionar features v3:
 2. Instala PM2: `npm i -g pm2`
 3. Cria `agent-manager.py` em `/opt/AGENTE/agent-manager/`
 4. Configura Caddy proxy + Cloudflare tunnel
-5. (Opcional) Configura HikerAPI + Tandem + GMaps API no `.env`
-6. Cria subagente `naia-rita` em `/opt/AGENTE/.claude/agents/`
-7. Reinicia tudo: `systemctl restart AGENTE AGENTE-bot && pm2 restart agent-manager`
+5. Reinicia tudo: `systemctl restart AGENTE AGENTE-bot && pm2 restart agent-manager`
 
 ## Issues / Suporte
 
@@ -183,7 +161,6 @@ Resumo dos principais:
 | `{{DOMINIO_AI}}` | Dominio secundario (opcional) | Ex: `meusite.ai` |
 | `{{DOMINIO_CRM}}` | Dominio do CRM (se tiver) | Ex: `crm.meusite.com` |
 | `{{DOMINIO_CLIENTE_EXEMPLO}}` | Subdominio exemplo de cliente | Ex: `cliente1.meusite.com` |
-| `{{TANDEM_TOKEN}}` | Token Tandem (so se for usar prospect Insta) | Painel Tandem |
 | `{{PRODUTO_DONO}}` | Nome do seu produto/SaaS principal | Voce decide |
 | `{{PRODUTO_DONO_SLUG}}` | Slug do produto | Ex: `meu-produto` |
 | `{{MENTORIA_DONO}}` / `{{FORMACAO_DONO}}` / `{{COMUNIDADE_DONO}}` | Nomes dos seus produtos educacionais | Voce decide |
